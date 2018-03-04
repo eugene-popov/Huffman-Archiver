@@ -3,6 +3,9 @@ using System.IO;
 
 namespace BackEnd
 {
+    /// <summary>
+    /// Utility class that purpose is to read binary data from a stream.
+    /// </summary>
     public class BitReader : IDisposable
     {
         #region Fields

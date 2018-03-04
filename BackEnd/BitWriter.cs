@@ -3,7 +3,10 @@ using System.IO;
 
 namespace BackEnd
 {
-    public class BitWriter
+    /// <summary>
+    /// Utility class that purpose is to write binary data to a stream.
+    /// </summary>
+    public class BitWriter: IDisposable
     {
         #region Fields
 
