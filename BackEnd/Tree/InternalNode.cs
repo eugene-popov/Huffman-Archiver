@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BackEnd.HuffmanTree
+namespace BackEnd.Tree
 {
     /// <summary>
     /// Represents an internal node of the Huffman tree. 
