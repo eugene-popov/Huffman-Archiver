@@ -19,12 +19,12 @@ namespace BackEnd
         private const int FreqsInTable = byte.MaxValue + 1;
 
         /// <summary>
-        /// Max index (or byte value) the table can address.
+        /// Min index (or byte value) the table can address.
         /// </summary>
         private const int MinTableIndex = byte.MinValue;
 
         /// <summary>
-        /// Min index (or byte value) the table can address.
+        /// Max index (or byte value) the table can address.
         /// </summary>
         private const int MaxTableIndex = byte.MaxValue;
 

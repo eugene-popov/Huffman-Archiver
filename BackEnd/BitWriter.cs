@@ -56,14 +56,16 @@ namespace BackEnd
         #region Methods
 
         /// <summary>
-        /// Writes the next bit to the provided stream.  
+        ///  Writes the next bit to the provided stream. 
         /// </summary>
+        /// <param name="b">A bit to be written (1 or 0).</param>
+        /// <exception cref="ArgumentException"><paramref name="b"/> is neither 1 nor 0.</exception>
         public void Write(int b)
         {
             if (b != 1 && b != 0)
                 /* if the provided value can't be interpreted as a bit */
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Provided bit value is neither 1 nor 0.");
             }
 
             /* write the provided bit to the end of the current byte */
