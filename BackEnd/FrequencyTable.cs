@@ -9,7 +9,7 @@ namespace BackEnd
     /// <summary>
     /// Utility class that represents the frequency table containing frequencies for each byte. 
     /// </summary>
-    class FrequencyTable
+    public class FrequencyTable
     {
         #region Fields
 
@@ -40,7 +40,7 @@ namespace BackEnd
         /// <summary>
         /// Get the frequency of the specified byte of value <paramref name="byteValue"/>.
         /// </summary>
-        /// <param name="byteValue">Table index of value between 0 and 255.</param>
+        /// <param name="byteValue">Byte of value between 0 and 255.</param>
         public int this[int byteValue]
         {
             get
@@ -107,7 +107,7 @@ namespace BackEnd
         /// Get the string representing the table (made for testing purposes).
         /// </summary>
         /// <returns>String representation of the table.</returns>
-        private new string ToString()
+        public override string ToString()
         {
             string result = "";
             for (int @byte = MinTableIndex; @byte <= MaxTableIndex; @byte++)
@@ -118,8 +118,7 @@ namespace BackEnd
                 {
                     /* print it as: byte - frequency */
                     result += "\n" +
-                              Convert.ToString(@byte, 2)
-                                  .Substring(24, 8) // get string with the binary representation of the byte   
+                              Convert.ToString(@byte, 2) // get string with the binary representation of the byte   
                               + " - " + this[@byte];
                 }
             }
