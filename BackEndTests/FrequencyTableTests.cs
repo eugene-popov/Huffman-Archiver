@@ -33,6 +33,7 @@ namespace BackEndTests
                 }
             }
             bitWriter.Dispose();
+            fileStream.Dispose();
         }
     }
 }
