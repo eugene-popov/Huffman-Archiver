@@ -37,24 +37,18 @@ namespace BackEnd
         /// <exception cref="ArgumentException"><paramref name="outputStream"/>is not writable.</exception>
         public BitWriter(Stream outputStream)
         {
-            if (outputStream == null)
+            _outputStream = outputStream ?? throw new ArgumentNullException(); 
+            
+            if (_outputStream.CanWrite == false)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentException();
             }
-            else
-            {
-                _outputStream = outputStream; 
-                if (_outputStream.CanWrite == false)
-                {
-                    throw new ArgumentException();
-                }
 
                
-                _numBitsFilled = 0;
-                _currentByte = 0;
-            }
+            _numBitsFilled = 0;
+            _currentByte = 0;
 
-            
+
         }
 
         #endregion
