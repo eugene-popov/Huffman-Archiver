@@ -7,6 +7,9 @@ namespace BackEndTests
     [TestClass]
     public class BitWriterTests
     {
+        /// <summary>
+        /// Tests how BitWriter treats a complete bit stream.
+        /// </summary>
         [TestMethod]
         public void BitWriterTest1()
         {
@@ -21,8 +24,12 @@ namespace BackEndTests
             bitWriter.Write(0);
             bitWriter.Write(1);
             bitWriter.Dispose();
+            stream.Dispose();
         }
         
+        /// <summary>
+        /// Tests how BitWriter treats a non-complete bit stream.
+        /// </summary>
         [TestMethod]
         public void BitWriterTest2()
         {
@@ -31,6 +38,7 @@ namespace BackEndTests
             bitWriter.Write(0);
             bitWriter.Write(1);
             bitWriter.Dispose();
+            stream.Dispose();
         }
     }
 }

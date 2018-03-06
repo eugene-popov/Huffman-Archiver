@@ -8,17 +8,23 @@ namespace BackEndTests
     [TestClass]
     public class BitReaderTests
     {
+        /// <summary>
+        /// Tests how BitReader reads a byte stream. 
+        /// </summary>
         [TestMethod]
         public void BitReaderTest1()
         {
             var stream = new FileStream("BitWriterTest1.out", FileMode.Open, FileAccess.Read);
             BitReader bitReader = new BitReader(stream);
-            int bit;
-            do
+            int bit = bitReader.Read();
+            while (bit != -1)
             {
-                bit = bitReader.Read();
                 Console.Write(bit);
-            } while (bit != -1);
+                bit = bitReader.Read();
+            }
+            bitReader.Dispose();
+            stream.Dispose();
+
 
         }
     }
