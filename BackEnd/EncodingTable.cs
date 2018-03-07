@@ -80,8 +80,15 @@ namespace BackEnd
             /* set codes to all bytes as null */
             FillTableWithNull();
             /* traverse the tree and set codes to all of its leaves */
-            SetCodes(tree);
-            
+            if (tree.Root is Leaf)
+            {
+                this[((Leaf) tree.Root).ByteValue] = new[] {0};
+            }
+            else
+            {
+                SetCodes(tree.Root, new List<int>());
+            }
+
         }
 
         #endregion
@@ -91,32 +98,28 @@ namespace BackEnd
         /// <summary>
         /// Sets codes to all leaves in the Huffman tree.
         /// </summary>
-        private void SetCodes(HuffmanTree tree)
+        private void SetCodes(Node node, List<int> code)
         {
-            /* initialize a stack to perform non-recursive tree traversal */
-            Stack<Node> stack = new Stack<Node>(tree.Height);
-            var current = tree.Root;
-            List<int> code = new List<int>(); 
-            do
+            if (node is InternalNode)
             {
-               
-                while (!(current is Leaf))
-                {
-                    stack.Push(current);
-                    current = ((InternalNode) current).Left;
-                    code.Add(0);
-                }
+                InternalNode internalNode = (InternalNode) node;
 
-                this[((Leaf) current).ByteValue] = code.ToArray();
-                
-                current = stack.Pop();
-                code.Remove(code.Count - 1);
-                current = ((InternalNode) current).Right;
+                code.Add(0);
+                SetCodes(internalNode.Left, code);
+                code.RemoveAt(code.Count - 1);
+
                 code.Add(1);
-
-
-            } while (stack.Count != 0 || current is Leaf);
+                SetCodes(internalNode.Right, code);
+                code.RemoveAt(code.Count - 1);
+            }
+            else if (node is Leaf)
+            {
+                Leaf leaf = (Leaf) node;
+                this[leaf.ByteValue] = code.ToArray();
+            }
         }
+
+        
         
         #region Utility Methods
 
@@ -137,19 +140,24 @@ namespace BackEnd
             for (int @byte = MinTableIndex; @byte <= MaxTableIndex; @byte++)
                 /*for each code in the table */
             {
-                if (this[@byte] != null)
-                    /* if the byte has its code */
+                try
                 {
+                    /* if the byte has its code */
+                    var nextByte = this[@byte];
                     /* print it as: byte - code */
                     result += "\n" +
                               Convert.ToString(@byte, 2) // get string with the binary representation of the byte   
                               + " - ";
-                    foreach (var bit in this[@byte])
+                    foreach (var bit in nextByte)
                     {
                         result += bit;
                     }
-                    
                 }
+                catch (ArgumentException)
+                {
+                    /* the byte has no code, so don't print it */
+                }
+
             }
 
             return result;
