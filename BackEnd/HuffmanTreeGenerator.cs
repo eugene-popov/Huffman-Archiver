@@ -12,10 +12,24 @@ namespace BackEnd
         /// <summary>
         /// Class used to store a node and its weight (i.e. total frequency) together. 
         /// </summary>
-        private class WeightedNode
+        private class WeightedNode : IComparable<WeightedNode>
         {
             public Node node;
             public long weight;
+           public int CompareTo(WeightedNode other)
+            {
+                if (weight > other.weight)
+                {
+                    return 1;
+                }
+
+                if (weight < other.weight)
+                {
+                    return -1;
+                }
+
+                return 0;
+            }
         }
 
         #endregion
@@ -36,6 +50,7 @@ namespace BackEnd
             
             /* the array contaning leaves of a tree */
             WeightedNode[] leaves = PackNodes(frequencyTable);
+            Array.Sort(leaves);
             if (leaves.Length == 1)
             {
                 return leaves[0].node;
@@ -69,7 +84,7 @@ namespace BackEnd
             string status = "";
             
             
-            for(int i = 0; i <= 254; i++)
+            for(int i = 0; i <= internalNodes.Length-1; i++)
                 /* while  */
             {
                 height += 1;
