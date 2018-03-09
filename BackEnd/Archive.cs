@@ -58,27 +58,43 @@ namespace BackEnd
         {
             /* open the file */
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            BufferedStream bufferedStream = new BufferedStream(fileStream, 1024*1024);
             /* read bytes from the file */
-            byte[] bytes = new byte[fileStream.Length];
-            fileStream.Read(bytes, 0, (int)fileStream.Length);
-            fileStream.Dispose();
-            FrequencyTable frequencyTable = new FrequencyTable(bytes);
+            //byte[] bytes = new byte[fileStream.Length];
+            //fileStream.Read(bytes, 0, (int)fileStream.Length);
+           //fileStream.Dispose();
+            
+            FrequencyTable frequencyTable = new FrequencyTable(bufferedStream);
+
+            
+            fileStream.Close();
+            bufferedStream.Close();
+            
 
             HuffmanTree huffmanTree = new HuffmanTree(frequencyTable);
             EncodingTable encodingTable = new EncodingTable(huffmanTree);
             
-            List<byte> buffer = new List<byte>();
-            BitWriter bitWriter = new BitWriter(ref buffer);
-            foreach (var @byte in bytes)
+            fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            bufferedStream = new BufferedStream(fileStream, 1024*1024);
+
+            var outStream = new BufferedStream(filePart.GetStream(), 1024 * 1024);
+         
+            BitWriter bitWriter = new BitWriter(outStream);
+           
+            int nextByte = bufferedStream.ReadByte();
+            while (nextByte != -1)
             {
-                foreach (var bit in encodingTable[@byte])
-                {
-                    bitWriter.Write(bit);
-                }
+                var code = encodingTable[nextByte];
+                for (int bit = 0; bit < code.Length; bit++)
+                    bitWriter.Write(code[bit]);
+                nextByte = bufferedStream.ReadByte();
             }
+            fileStream.Close();
+            bufferedStream.Close();
             
             bitWriter.Dispose();
-            filePart.GetStream().Write(buffer.ToArray(), 0, buffer.Count);           
+             
+            _archive.Close();
             
         }
 

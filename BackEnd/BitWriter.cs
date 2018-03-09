@@ -150,7 +150,7 @@ namespace BackEnd
                 Close();
                 if (disposing)
                 {
-                    _outputStream.Dispose();
+                    //_outputStream.Dispose();
                 }
 
                 disposed = true;

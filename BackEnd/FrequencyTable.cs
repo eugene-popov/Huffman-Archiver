@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,6 +84,7 @@ namespace BackEnd
 
         #region Constructors
 
+       
         public FrequencyTable(byte[] bytes)
         {
             FillTableWithZeroes();
@@ -91,6 +93,21 @@ namespace BackEnd
                 this[@byte] += 1;
             }
         }
+
+        /// <summary>
+        /// Creates an empty frequency table.
+        /// </summary>
+        public FrequencyTable(Stream stream)
+        {
+            FillTableWithZeroes();
+            int nextByte = stream.ReadByte();
+            while (nextByte != -1)
+            {
+                Increment(nextByte);
+                nextByte = stream.ReadByte();
+            }
+        }
+        
         /// <summary>
         /// Sets all the frequencies to the initial value of 0. 
         /// </summary>
@@ -106,6 +123,11 @@ namespace BackEnd
 
         #region Methods
 
+        public void Increment(int @byte)
+        {
+            this[@byte] += 1;
+        }
+        
         /// <summary>
         /// Get the string representing the table (made for testing purposes).
         /// </summary>
