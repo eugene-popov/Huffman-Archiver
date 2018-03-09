@@ -49,17 +49,26 @@ namespace BackEnd
 
         }
 
+        /// <summary>
+        /// Compresses the file stored in the <paramref name="path"/> and stores compressed file it the <paramref name="filePart"/>.
+        /// </summary>
+        /// <param name="path">The path to the file to be compressed.</param>
+        /// <param name="filePart">The archive part to store the compressed file in.</param>
         private void CompressFile(string path, PackagePart filePart)
         {
+            /* open the file */
             FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            /* read bytes from the file */
             byte[] bytes = new byte[fileStream.Length];
             fileStream.Read(bytes, 0, (int)fileStream.Length);
+            fileStream.Dispose();
             FrequencyTable frequencyTable = new FrequencyTable(bytes);
 
             HuffmanTree huffmanTree = new HuffmanTree(frequencyTable);
             EncodingTable encodingTable = new EncodingTable(huffmanTree);
             
-            BitWriter bitWriter = new BitWriter(filePart.GetStream());
+            List<byte> buffer = new List<byte>();
+            BitWriter bitWriter = new BitWriter(ref buffer);
             foreach (var @byte in bytes)
             {
                 foreach (var bit in encodingTable[@byte])
@@ -69,7 +78,7 @@ namespace BackEnd
             }
             
             bitWriter.Dispose();
-            fileStream.Dispose();
+            filePart.GetStream().Write(buffer.ToArray(), 0, buffer.Count);           
             
         }
 

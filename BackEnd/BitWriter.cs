@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BackEnd
@@ -14,6 +15,12 @@ namespace BackEnd
         /// The stream to write bits to (not null).
         /// </summary>
         private Stream _outputStream;
+
+
+        /// <summary>
+        /// The buffer to write bits to. 
+        /// </summary>
+        private List<byte> _outputBuffer;
 
         /// <summary>
         /// The value of the current byte being filled with specified bits.
@@ -50,6 +57,18 @@ namespace BackEnd
 
 
         }
+        
+        public BitWriter(ref List<byte> bytes)
+        {
+            _outputBuffer = bytes;
+            
+            
+               
+            _numBitsFilled = 0;
+            _currentByte = 0;
+
+
+        }
 
         #endregion
 
@@ -62,24 +81,37 @@ namespace BackEnd
         /// <exception cref="ArgumentException"><paramref name="b"/> is neither 1 nor 0.</exception>
         public void Write(int b)
         {
-            if (b != 1 && b != 0)
-                /* if the provided value can't be interpreted as a bit */
-            {
-                throw new ArgumentException("Provided bit value is neither 1 nor 0.");
-            }
+            
+           
+                if (b != 1 && b != 0)
+                    /* if the provided value can't be interpreted as a bit */
+                {
+                    throw new ArgumentException("Provided bit value is neither 1 nor 0.");
+                }
 
-            /* write the provided bit to the end of the current byte */
-            _currentByte = (_currentByte << 1) | b;
-            _numBitsFilled += 1;
+                /* write the provided bit to the end of the current byte */
+                _currentByte = (_currentByte << 1) | b;
+                _numBitsFilled += 1;
 
-            if (_numBitsFilled == 8)
-                /* if the current byte is completely formed */
-            {
-                /* write the current byte to the stream */
-                _outputStream.WriteByte((byte) _currentByte);
-                _currentByte = 0;
-                _numBitsFilled = 0;
-            }
+                if (_numBitsFilled == 8)
+                    /* if the current byte is completely formed */
+                {
+                    
+                    if (_outputStream != null)
+                    {
+                        /* write the current byte to the stream if the stream is prefered */
+                        _outputStream.WriteByte((byte) _currentByte);
+                    }
+                    else if (_outputBuffer != null)
+                    {
+                        /* write the current byte to the buffer if the buffer is prefered */
+                        _outputBuffer.Add((byte) _currentByte);
+                    }
+
+                    _currentByte = 0;
+                    _numBitsFilled = 0;
+                }
+            
         }
 
         /// <summary>
