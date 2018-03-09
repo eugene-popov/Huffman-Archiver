@@ -85,51 +85,12 @@ namespace BackEnd
 
         public FrequencyTable(byte[] bytes)
         {
-            int[] newBytes = DivideBytes(bytes);
-
             FillTableWithZeroes();
-            foreach (var @byte in newBytes)
+            foreach (var @byte in bytes)
             {
                 this[@byte] += 1;
             }
         }
-        /// <summary>
-        /// Divides each 8-bit byte to two 4-digit parts in order to escape overflow out of type int32 storing max-possible code of bit lenght 255.
-        /// </summary>
-        /// <param name="bytes"></param>
-        /// <returns></returns>
-        private int[] DivideBytes(byte[] bytes)
-        {
-            
-            int[] oldBytes = new int[bytes.Length];
-            int[] newBytes = new int[bytes.Length*2];
-            bytes.CopyTo(oldBytes, 0);
-            int newBytesCounter = 0;
-            for (int i = 0; i < oldBytes.Length; i++)
-            {
-
-                newBytes[newBytesCounter] = 0;
-                for (int k = 7; k >= 4; k--)
-                {
-                    newBytes[newBytesCounter] = (newBytes[newBytesCounter] << 1) | (oldBytes[i] >> k) & 1;
-                }
-
-                newBytesCounter++;
-
-                newBytes[newBytesCounter] = 0;
-                for (int k = 3; k >= 0; k--)
-                {
-                    newBytes[newBytesCounter] = (newBytes[newBytesCounter] << 1) | (oldBytes[i] >> k) & 1;
-                }
-
-                newBytesCounter++;
-
-               
-            }
-
-            return newBytes;
-        }
-
         /// <summary>
         /// Sets all the frequencies to the initial value of 0. 
         /// </summary>
