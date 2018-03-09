@@ -14,7 +14,8 @@ namespace BackEndTests
         [TestMethod]
         public void EncodingTest1()
         {
-            FileStream fileStream = new FileStream("FrequencyTableTest.in", FileMode.Open, FileAccess.Read);
+            GenerateByteStream("EncodingTest1", 0, 255, false);
+            FileStream fileStream = new FileStream("EncodingTest1", FileMode.Open, FileAccess.Read);
             byte[] bytes = new byte[fileStream.Length];
             fileStream.Read(bytes, 0, (int)fileStream.Length);
             FrequencyTable frequencyTable = new FrequencyTable(bytes);

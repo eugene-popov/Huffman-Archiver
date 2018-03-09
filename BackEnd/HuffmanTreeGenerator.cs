@@ -22,10 +22,26 @@ namespace BackEnd
                 {
                     return 1;
                 }
-
                 if (weight < other.weight)
                 {
                     return -1;
+                }
+                if (weight == other.weight)
+                {
+                    if ((node is Leaf) && (other.node is Leaf))
+                    /* if two weighted nodes can be compared by the second key (byte value) */
+                    {
+                        if (((Leaf) node).ByteValue > ((Leaf) other.node).ByteValue)
+                        {
+                            return 1;
+                        }
+                        if (((Leaf)node).ByteValue < ((Leaf)other.node).ByteValue)
+                        {
+                            return -1;
+                        }
+
+                        return 0;
+                    }
                 }
 
                 return 0;
