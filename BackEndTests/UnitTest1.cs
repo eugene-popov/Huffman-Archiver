@@ -22,5 +22,12 @@ namespace BackEndTests
             binaryFormatter.Serialize(fileStream, frequencyTable);
 
         }
+
+        [TestMethod]
+        public void ArchiveTest1()
+        {
+            Archive archive = new Archive("archive");
+            archive.AddFile("123.txt");
+        }
     }
 }
