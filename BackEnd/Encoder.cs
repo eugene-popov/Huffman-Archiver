@@ -109,6 +109,9 @@ namespace BackEnd
 
         #region Methods
 
+        /// <summary>
+        /// Encodes the stream.
+        /// </summary>
         public void Encode()
         {
             var bitWriter = new BitWriter(OutputStream);
@@ -121,6 +124,8 @@ namespace BackEnd
                     bitWriter.Write(code[bitIndex]);
                 nextByte = InputStream.ReadByte();
             }
+
+            ;
         }
 
         #endregion

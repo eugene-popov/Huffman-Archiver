@@ -29,5 +29,27 @@ namespace BackEndTests
             Archive archive = new Archive("archive");
             archive.AddFile("123.doc");
         }
+        
+        [TestMethod]
+        public void ArchiveTest2()
+        {
+            Archive archive = new Archive("archive");
+            archive.ExtractFile("123.doc");
+        }
+
+        [TestMethod]
+        public void FileEndTest()
+        {
+            FileStream fileStream = File.OpenRead("123.doc");
+            
+            for (int i = 1; i <= fileStream.Length+5; i++)
+            {
+                Console.WriteLine("{0}:{1}",i,fileStream.ReadByte());
+            }
+            
+        }
+
+
+
     }
 }

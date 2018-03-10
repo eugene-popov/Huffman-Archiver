@@ -36,6 +36,16 @@ namespace BackEnd
             /// </summary>
             public double compressionRatio;
 
+            /// <summary>
+            /// The size of the file before compression.
+            /// </summary>
+            public long uncompressedSize;
+
+            /// <summary>
+            /// The size of the compressed file.
+            /// </summary>
+            public long compressedSize;
+
             #endregion
         }
 
@@ -75,6 +85,13 @@ namespace BackEnd
 
         #region Methods
 
+        #region File compression
+
+        /// <summary>
+        /// Compresses and adds the file stored in the specified <paramref name="path"/> to the archive.
+        /// </summary>
+        /// <param name="path">The path the file to be added stored in.</param>
+        /// <exception cref="IOException">The file does not exist or cannot be read.</exception>
         public void AddFile(string path)
         {
             /* check if file exists and can be read */
@@ -112,7 +129,7 @@ namespace BackEnd
             
             /* store collected meta data of the added file in archive */
             StoreMetaData(filePart, frequencies, uncompressedHash, compressedHash
-            , (compressedSize * 1.0)/uncompressedSize);
+            , (compressedSize * 1.0)/uncompressedSize, uncompressedSize, compressedSize);
             _archive.Close();
 
         }
@@ -145,8 +162,73 @@ namespace BackEnd
             filePartStream.Close();
         }
 
+        #endregion
+
+        #region File decompression
+
+        public void ExtractFile(String partTitle)
+        {
+           /* create path (relating to the archive root) where the compressed file is stored */
+            Uri fileUri = PackUriHelper.CreatePartUri(new Uri(".\\" + Path.GetFileName(partTitle), UriKind.Relative));
+            /* get the package part in the path */
+            var filePart = _archive.GetPart(fileUri);
+            /* get metadata of the file */
+            var meta = GetMetaData(filePart);
+            /* create decompressed file's stream */
+            var fileStream = new FileStream(Path.GetFileName(partTitle), FileMode.Create, FileAccess.Write, FileShare.Read, BufferSize);
+            var compressedStream = new BufferedStream(filePart.GetStream(), BufferSize);
+            DecompressFile(compressedStream, fileStream, meta);
+            /* close unused streams */
+            fileStream.Close();
+            compressedStream.Close();
+        }
+
+        private void DecompressFile(Stream compressed, Stream decompressed, FileMetaData meta)
+        {
+            var frequencies = meta.frequencyTable;
+            var bytesCount = meta.uncompressedSize;
+            var decoder = new Decoder(compressed, decompressed, frequencies, bytesCount);
+            decoder.Decode();
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Gets meta data of the <paramref name="part"/>.
+        /// </summary>
+        /// <param name="part">The part which meta data should be returned.</param>
+        /// <returns>Metadata of the <paramref name="part"/>.</returns>
+        private FileMetaData GetMetaData(PackagePart part)
+        {
+            PackageRelationship relationship = null;
+            foreach (var rel in part.GetRelationships())
+            {
+                relationship = rel;
+            }
+
+            var metaPart = _archive.GetPart(relationship.TargetUri);
+            FileMetaData meta = null;
+            using (var metaStream = metaPart.GetStream())
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                meta = (FileMetaData) binaryFormatter.Deserialize(metaStream);
+            }
+
+            return meta;
+        }
+
+        /// <summary>
+        /// Stores meta data (i.e. data needed to decompress and test the file) for the compressed <paramref name="filePart"/>.
+        /// </summary>
+        /// <param name="filePart">The compressed file which meta data should be stored.</param>
+        /// <param name="frequencyTable">The frequency table needed to restore the Huffman tree (for file decoding). </param>
+        /// <param name="uncompressedHashSum">The hashsum needed to test file correctness after unpacking.</param>
+        /// <param name="compressedHashSum">The hashsum needed to test compressed file correctness before unpacking.</param>
+        /// <param name="ratio">The compression ratio shown to the user.</param>
+        /// <param name="uncompressed">Size of the file before compression.</param>
+        /// <param name="compressed">Size of the compressed file.</param>
         private void StoreMetaData(PackagePart filePart, FrequencyTable frequencyTable, byte[] uncompressedHashSum,
-            byte[] compressedHashSum, double ratio)
+            byte[] compressedHashSum, double ratio, long uncompressed, long compressed)
         {
             /* collect metadate into a class */
             var meta = new FileMetaData()
@@ -154,7 +236,9 @@ namespace BackEnd
                 frequencyTable = frequencyTable,
                 compressedHash = compressedHashSum,
                 uncompressedHash = uncompressedHashSum,
-                compressionRatio = ratio
+                compressionRatio = ratio,
+                uncompressedSize = uncompressed,
+                compressedSize = compressed
             };
             
             /* create path (relating to the archive root) where the meta data will be stored */
