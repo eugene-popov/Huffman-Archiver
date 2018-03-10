@@ -27,7 +27,7 @@ namespace BackEndTests
         public void ArchiveTest1()
         {
             Archive archive = new Archive("archive");
-            archive.AddFile("123.txt");
+            archive.AddFile("123.doc");
         }
     }
 }

@@ -41,6 +41,7 @@
     <Compile Include="Archive.cs" />
     <Compile Include="BitReader.cs" />
     <Compile Include="BitWriter.cs" />
+      <Compile Include="Encoder.cs"/>
     <Compile Include="FrequencyTable.cs" />
     <Compile Include="EncodingTable.cs" />
     <Compile Include="HuffmanTreeGenerator.cs" />

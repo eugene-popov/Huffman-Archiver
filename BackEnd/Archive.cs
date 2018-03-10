@@ -1,22 +1,57 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using BackEnd.Tree;
 
 namespace BackEnd
 {
     public class Archive
     {
+        #region Utility classes
+
+        [Serializable]
+        private class FileMetaData
+        {
+            #region Fields
+
+            /// <summary>
+            /// The frequency table to restore the Huffman tree to decode the file.
+            /// </summary>
+            public FrequencyTable frequencyTable;
+
+            /// <summary>
+            /// The hash of the uncompressed file.
+            /// </summary>
+            public byte[] uncompressedHash;
+
+            /// <summary>
+            /// The hash of the compressed file.
+            /// </summary>
+            public byte[] compressedHash;
+
+            /// <summary>
+            /// The compression ratio of the file.
+            /// </summary>
+            public double compressionRatio;
+
+            #endregion
+        }
+
+        #endregion
+        
         #region Fields
 
         /// <summary>
         /// The package that represents the archive. 
         /// </summary>
         private Package _archive;
+
+        /// <summary>
+        /// The amount of bytes that should be buffered while performing I/O operations. 
+        /// </summary>
+        private const int BufferSize = 1024 * 1024 * 4;
 
         #endregion
 
@@ -32,7 +67,7 @@ namespace BackEnd
         /// <param name="path">The path the archive is located in.</param>
         public Archive(string path)
         {
-            _archive = Package.Open(path, FileMode.Create);
+            _archive = Package.Open(path, FileMode.OpenOrCreate);
             
         }
 
@@ -42,10 +77,43 @@ namespace BackEnd
 
         public void AddFile(string path)
         {
+            /* check if file exists and can be read */
+            if (!File.Exists(path))
+            {
+                throw new IOException("The file in the provided path does not exist or cannot be read.");
+            }
+            
+            /* create path (relating to the archive root) where a compressed file will be stored */
             Uri fileUri = PackUriHelper.CreatePartUri(new Uri(".\\" + Path.GetFileName(path), UriKind.Relative));
+            /* create a package part in the path */
             PackagePart filePart = _archive.CreatePart(fileUri, "", CompressionOption.NotCompressed);
             
-            CompressFile(path, filePart);
+            /* calculate the file's hashsum and size */
+            byte[] uncompressedHash;
+            long uncompressedSize;
+            using (var fileStream = File.OpenRead(path))
+            {
+                uncompressedSize = fileStream.Length;
+                uncompressedHash = ComputeHashCode(fileStream);
+            }
+            
+            /* compress the file and store the compressed file in the package part */
+            CompressFile(path, filePart, out FrequencyTable frequencies);
+            
+            /* calculate the compressed file's hashsum and size */
+            byte[] compressedHash;
+            long compressedSize;
+            using (var compressedPartStream = new BufferedStream(filePart.GetStream(), BufferSize))
+            {
+                compressedSize = compressedPartStream.Length;
+                compressedHash = ComputeHashCode(compressedPartStream);
+            }
+            filePart.GetStream().Close();
+            
+            /* store collected meta data of the added file in archive */
+            StoreMetaData(filePart, frequencies, uncompressedHash, compressedHash
+            , (compressedSize * 1.0)/uncompressedSize);
+            _archive.Close();
 
         }
 
@@ -54,50 +122,74 @@ namespace BackEnd
         /// </summary>
         /// <param name="path">The path to the file to be compressed.</param>
         /// <param name="filePart">The archive part to store the compressed file in.</param>
-        private void CompressFile(string path, PackagePart filePart)
+        /// <param name="frequencyTable">The frequency table to be saved to the archive.</param>
+        private void CompressFile(string path, PackagePart filePart, out FrequencyTable frequencyTable)
         {
             /* open the file */
-            FileStream fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            BufferedStream bufferedStream = new BufferedStream(fileStream, 1024*1024);
-            /* read bytes from the file */
-            //byte[] bytes = new byte[fileStream.Length];
-            //fileStream.Read(bytes, 0, (int)fileStream.Length);
-           //fileStream.Dispose();
-            
-            FrequencyTable frequencyTable = new FrequencyTable(bufferedStream);
-
-            
-            fileStream.Close();
-            bufferedStream.Close();
-            
-
-            HuffmanTree huffmanTree = new HuffmanTree(frequencyTable);
-            EncodingTable encodingTable = new EncodingTable(huffmanTree);
-            
-            fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            bufferedStream = new BufferedStream(fileStream, 1024*1024);
-
-            var outStream = new BufferedStream(filePart.GetStream(), 1024 * 1024);
-         
-            BitWriter bitWriter = new BitWriter(outStream);
-           
-            int nextByte = bufferedStream.ReadByte();
-            while (nextByte != -1)
-            {
-                var code = encodingTable[nextByte];
-                for (int bit = 0; bit < code.Length; bit++)
-                    bitWriter.Write(code[bit]);
-                nextByte = bufferedStream.ReadByte();
-            }
-            fileStream.Close();
-            bufferedStream.Close();
-            
-            bitWriter.Dispose();
-             
-            _archive.Close();
-            
+            var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize);
+            /* find frequencies of bytes in the file */
+            frequencyTable = new FrequencyTable(fileStream);
+            /* rewind the position of the stream to use this stream once again */
+            fileStream.Position = 0;          
+            /* build the Huffman tree based on the counted frequencies */
+            var huffmanTree = new HuffmanTree(frequencyTable);
+            /* get the Huffman code from the tree */
+            var encodingTable = new EncodingTable(huffmanTree);
+            /* get the file part's stream */
+            var filePartStream = new BufferedStream(filePart.GetStream(), BufferSize);
+            /* encode the file */
+            var encoder = new Encoder(fileStream, filePartStream, encodingTable); 
+            encoder.Encode();
+            /* dispose unused streams */
+            fileStream.Close();        
+            filePartStream.Close();
         }
 
+        private void StoreMetaData(PackagePart filePart, FrequencyTable frequencyTable, byte[] uncompressedHashSum,
+            byte[] compressedHashSum, double ratio)
+        {
+            /* collect metadate into a class */
+            var meta = new FileMetaData()
+            {
+                frequencyTable = frequencyTable,
+                compressedHash = compressedHashSum,
+                uncompressedHash = uncompressedHashSum,
+                compressionRatio = ratio
+            };
+            
+            /* create path (relating to the archive root) where the meta data will be stored */
+            var metaUri = PackUriHelper.CreatePartUri(new Uri(filePart.Uri.ToString() + "META", UriKind.Relative));
+            /* create a package part in the path */
+            var metaPart = _archive.CreatePart(metaUri, "", CompressionOption.NotCompressed);
+
+            filePart.CreateRelationship(metaUri, TargetMode.Internal, ".\\META");
+            
+            using (var metaStream = new BufferedStream(metaPart.GetStream(), BufferSize))
+            {
+                var formatter = new BinaryFormatter();
+                formatter.Serialize(metaStream, meta);
+            }
+            
+
+
+        }
+
+        /// <summary>
+        /// Computes the hash for the specified <paramref name="fileStream"/>.
+        /// </summary>
+        /// <param name="fileStream">The stream which hashcode should be calculated.</param>
+        /// <returns>The hashcode of the <paramref name="fileStream"/></returns>
+        private byte[] ComputeHashCode(Stream fileStream)
+        {
+            byte[] hash;
+            using (var md5 = MD5.Create())
+            {
+                hash = md5.ComputeHash(fileStream);
+            }
+
+            return hash;
+        }
+        
         #endregion
     }
 }
