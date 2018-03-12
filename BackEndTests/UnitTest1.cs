@@ -28,6 +28,8 @@ namespace BackEndTests
         {
             Archive archive = new Archive("archive");
             archive.AddFile("123.doc");
+            archive.AddFile("123.txt");
+            archive.Close();
         }
         
         [TestMethod]

@@ -125,7 +125,7 @@ namespace BackEnd
                 nextByte = InputStream.ReadByte();
             }
 
-            ;
+            bitWriter.Dispose();
         }
 
         #endregion
