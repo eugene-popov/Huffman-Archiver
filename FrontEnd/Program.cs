@@ -6,22 +6,25 @@ using System.Windows.Forms;
 
 namespace FrontEnd
 {
-    static class Program
+    public static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
           
-        static void Main()
+        public static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Controller.controller = new Controller();
-            Controller.controller.mainWindow = new MainWindow();
-            Controller.controller.OpenArchive("D:\\Huffman-Archiver\\BackEndTests\\bin\\Debug\\archive");
-            Controller.controller.RefreshView();
-            Application.Run(Controller.controller.mainWindow);
+            
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Controller.controller = new Controller();
+                Controller.controller.mainWindow = new MainWindow();
+                Application.Run(Controller.controller.mainWindow);
+            
+            
         }
+        
+        
     }
 }
