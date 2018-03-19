@@ -38,11 +38,22 @@
             this.label1 = new System.Windows.Forms.Label();
             this.welcomeLabel2 = new System.Windows.Forms.Label();
             this.welcomeLabel1 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extrToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.theArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.theFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testTheFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.testTheFileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.testTheArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeTheFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.shortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutHuffmanArchiverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,7 +64,6 @@
             this.uncompressedSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.compressionRatio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ButtonsPanel = new System.Windows.Forms.Panel();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.ExitButton = new System.Windows.Forms.Button();
             this.CloseArchiveButton = new System.Windows.Forms.Button();
             this.ExtractArchiveButton = new System.Windows.Forms.Button();
@@ -64,23 +74,15 @@
             this.TestFileButton = new System.Windows.Forms.Button();
             this.ExtractFileButton = new System.Windows.Forms.Button();
             this.addFileButton = new System.Windows.Forms.Button();
-            this.newArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.addFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.theArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.theFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testTheFileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.testTheArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeTheFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.openArchiveDialog = new System.Windows.Forms.OpenFileDialog();
+            this.createArchiveDialog = new System.Windows.Forms.SaveFileDialog();
             this.welcomePanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.ArchiveViewerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ArchiveVIEWER)).BeginInit();
             this.ButtonsPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // welcomePanel
@@ -181,6 +183,15 @@
             this.welcomeLabel1.Text = "Open an existing archive";
             this.welcomeLabel1.Click += new System.EventHandler(this.welcomeLabel1_Click);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::FrontEnd.Properties.Resources.openArchive;
+            this.pictureBox1.Location = new System.Drawing.Point(56, 118);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(231, 245);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
             // menuStrip1
             // 
             this.menuStrip1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -206,6 +217,43 @@
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // newArchiveToolStripMenuItem
+            // 
+            this.newArchiveToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.CreateArchive;
+            this.newArchiveToolStripMenuItem.Name = "newArchiveToolStripMenuItem";
+            this.newArchiveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.newArchiveToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.newArchiveToolStripMenuItem.Text = "New";
+            this.newArchiveToolStripMenuItem.Click += new System.EventHandler(this.newArchiveToolStripMenuItem_Click);
+            // 
+            // openArchiveToolStripMenuItem
+            // 
+            this.openArchiveToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.OpenAnotherArchive;
+            this.openArchiveToolStripMenuItem.Name = "openArchiveToolStripMenuItem";
+            this.openArchiveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openArchiveToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.openArchiveToolStripMenuItem.Text = "Open...";
+            this.openArchiveToolStripMenuItem.Click += new System.EventHandler(this.openArchiveToolStripMenuItem_Click);
+            // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.CloseArchive;
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.C)));
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.closeToolStripMenuItem.Text = "Close";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.exit;
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
             // archiveToolStripMenuItem
             // 
             this.archiveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -218,6 +266,15 @@
             this.archiveToolStripMenuItem.Text = "Archive";
             this.archiveToolStripMenuItem.Click += new System.EventHandler(this.archiveToolStripMenuItem_Click);
             // 
+            // addFileToolStripMenuItem
+            // 
+            this.addFileToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.AddFile;
+            this.addFileToolStripMenuItem.Name = "addFileToolStripMenuItem";
+            this.addFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
+            this.addFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addFileToolStripMenuItem.Text = "Add a file";
+            this.addFileToolStripMenuItem.Click += new System.EventHandler(this.addFileToolStripMenuItem_Click);
+            // 
             // extrToolStripMenuItem
             // 
             this.extrToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -228,6 +285,25 @@
             this.extrToolStripMenuItem.Text = "Extract";
             this.extrToolStripMenuItem.Click += new System.EventHandler(this.extrToolStripMenuItem_Click);
             // 
+            // theArchiveToolStripMenuItem
+            // 
+            this.theArchiveToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.ExtractFile;
+            this.theArchiveToolStripMenuItem.Name = "theArchiveToolStripMenuItem";
+            this.theArchiveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+            this.theArchiveToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.theArchiveToolStripMenuItem.Text = "Extract the file";
+            this.theArchiveToolStripMenuItem.Click += new System.EventHandler(this.theArchiveToolStripMenuItem_Click);
+            // 
+            // theFileToolStripMenuItem
+            // 
+            this.theFileToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.ExtractArchive;
+            this.theFileToolStripMenuItem.Name = "theFileToolStripMenuItem";
+            this.theFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.E)));
+            this.theFileToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
+            this.theFileToolStripMenuItem.Text = "Extract the archive";
+            this.theFileToolStripMenuItem.Click += new System.EventHandler(this.theFileToolStripMenuItem_Click);
+            // 
             // testTheFileToolStripMenuItem
             // 
             this.testTheFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -236,6 +312,34 @@
             this.testTheFileToolStripMenuItem.Name = "testTheFileToolStripMenuItem";
             this.testTheFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.testTheFileToolStripMenuItem.Text = "Test";
+            // 
+            // testTheFileToolStripMenuItem1
+            // 
+            this.testTheFileToolStripMenuItem1.Image = global::FrontEnd.Properties.Resources.TestFile;
+            this.testTheFileToolStripMenuItem1.Name = "testTheFileToolStripMenuItem1";
+            this.testTheFileToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
+            this.testTheFileToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
+            this.testTheFileToolStripMenuItem1.Text = "Test the file";
+            this.testTheFileToolStripMenuItem1.Click += new System.EventHandler(this.testTheFileToolStripMenuItem1_Click);
+            // 
+            // testTheArchiveToolStripMenuItem
+            // 
+            this.testTheArchiveToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.TestArchive;
+            this.testTheArchiveToolStripMenuItem.Name = "testTheArchiveToolStripMenuItem";
+            this.testTheArchiveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.T)));
+            this.testTheArchiveToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
+            this.testTheArchiveToolStripMenuItem.Text = "Test the archive";
+            this.testTheArchiveToolStripMenuItem.Click += new System.EventHandler(this.testTheArchiveToolStripMenuItem_Click);
+            // 
+            // removeTheFileToolStripMenuItem
+            // 
+            this.removeTheFileToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.RemoveFile;
+            this.removeTheFileToolStripMenuItem.Name = "removeTheFileToolStripMenuItem";
+            this.removeTheFileToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+            this.removeTheFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.removeTheFileToolStripMenuItem.Text = "Remove the file";
+            this.removeTheFileToolStripMenuItem.Click += new System.EventHandler(this.removeTheFileToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -250,14 +354,14 @@
             // 
             this.shortcutsToolStripMenuItem.Name = "shortcutsToolStripMenuItem";
             this.shortcutsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.shortcutsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.shortcutsToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.shortcutsToolStripMenuItem.Text = "Shortcuts";
             this.shortcutsToolStripMenuItem.Click += new System.EventHandler(this.shortcutsToolStripMenuItem_Click);
             // 
             // aboutHuffmanArchiverToolStripMenuItem
             // 
             this.aboutHuffmanArchiverToolStripMenuItem.Name = "aboutHuffmanArchiverToolStripMenuItem";
-            this.aboutHuffmanArchiverToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutHuffmanArchiverToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.aboutHuffmanArchiverToolStripMenuItem.Text = "About";
             this.aboutHuffmanArchiverToolStripMenuItem.Click += new System.EventHandler(this.aboutHuffmanArchiverToolStripMenuItem_Click);
             // 
@@ -294,6 +398,8 @@
             this.ArchiveVIEWER.Size = new System.Drawing.Size(659, 311);
             this.ArchiveVIEWER.StandardTab = true;
             this.ArchiveVIEWER.TabIndex = 2;
+            this.ArchiveVIEWER.SelectionChanged += new System.EventHandler(this.ArchiveVIEWER_SelectionChanged);
+            this.ArchiveVIEWER.VisibleChanged += new System.EventHandler(this.ArchiveVIEWER_VisibleChanged);
             // 
             // name
             // 
@@ -336,7 +442,7 @@
             this.ButtonsPanel.Controls.Add(this.TestFileButton);
             this.ButtonsPanel.Controls.Add(this.ExtractFileButton);
             this.ButtonsPanel.Controls.Add(this.addFileButton);
-            this.ButtonsPanel.Location = new System.Drawing.Point(0, 0);
+            this.ButtonsPanel.Location = new System.Drawing.Point(0, 3);
             this.ButtonsPanel.Name = "ButtonsPanel";
             this.ButtonsPanel.Size = new System.Drawing.Size(665, 52);
             this.ButtonsPanel.TabIndex = 1;
@@ -532,106 +638,19 @@
             this.addFileButton.UseVisualStyleBackColor = false;
             this.addFileButton.Click += new System.EventHandler(this.addFileButton_Click);
             // 
-            // newArchiveToolStripMenuItem
+            // openArchiveDialog
             // 
-            this.newArchiveToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.CreateArchive;
-            this.newArchiveToolStripMenuItem.Name = "newArchiveToolStripMenuItem";
-            this.newArchiveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newArchiveToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.newArchiveToolStripMenuItem.Text = "New";
-            this.newArchiveToolStripMenuItem.Click += new System.EventHandler(this.newArchiveToolStripMenuItem_Click);
+            this.openArchiveDialog.Filter = "HUF archives (*.huf)|*.huf";
+            this.openArchiveDialog.RestoreDirectory = true;
+            this.openArchiveDialog.Title = "Open an existing archive";
             // 
-            // openArchiveToolStripMenuItem
+            // createArchiveDialog
             // 
-            this.openArchiveToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.OpenAnotherArchive;
-            this.openArchiveToolStripMenuItem.Name = "openArchiveToolStripMenuItem";
-            this.openArchiveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openArchiveToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.openArchiveToolStripMenuItem.Text = "Open...";
-            this.openArchiveToolStripMenuItem.Click += new System.EventHandler(this.openArchiveToolStripMenuItem_Click);
-            // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.CloseArchive;
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.C)));
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.exit;
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // addFileToolStripMenuItem
-            // 
-            this.addFileToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.AddFile;
-            this.addFileToolStripMenuItem.Name = "addFileToolStripMenuItem";
-            this.addFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.A)));
-            this.addFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.addFileToolStripMenuItem.Text = "Add a file";
-            this.addFileToolStripMenuItem.Click += new System.EventHandler(this.addFileToolStripMenuItem_Click);
-            // 
-            // theArchiveToolStripMenuItem
-            // 
-            this.theArchiveToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.ExtractFile;
-            this.theArchiveToolStripMenuItem.Name = "theArchiveToolStripMenuItem";
-            this.theArchiveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
-            this.theArchiveToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
-            this.theArchiveToolStripMenuItem.Text = "Extract the file";
-            this.theArchiveToolStripMenuItem.Click += new System.EventHandler(this.theArchiveToolStripMenuItem_Click);
-            // 
-            // theFileToolStripMenuItem
-            // 
-            this.theFileToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.ExtractArchive;
-            this.theFileToolStripMenuItem.Name = "theFileToolStripMenuItem";
-            this.theFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.E)));
-            this.theFileToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
-            this.theFileToolStripMenuItem.Text = "Extract the archive";
-            this.theFileToolStripMenuItem.Click += new System.EventHandler(this.theFileToolStripMenuItem_Click);
-            // 
-            // testTheFileToolStripMenuItem1
-            // 
-            this.testTheFileToolStripMenuItem1.Image = global::FrontEnd.Properties.Resources.TestFile;
-            this.testTheFileToolStripMenuItem1.Name = "testTheFileToolStripMenuItem1";
-            this.testTheFileToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.T)));
-            this.testTheFileToolStripMenuItem1.Size = new System.Drawing.Size(225, 22);
-            this.testTheFileToolStripMenuItem1.Text = "Test the file";
-            this.testTheFileToolStripMenuItem1.Click += new System.EventHandler(this.testTheFileToolStripMenuItem1_Click);
-            // 
-            // testTheArchiveToolStripMenuItem
-            // 
-            this.testTheArchiveToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.TestArchive;
-            this.testTheArchiveToolStripMenuItem.Name = "testTheArchiveToolStripMenuItem";
-            this.testTheArchiveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.T)));
-            this.testTheArchiveToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-            this.testTheArchiveToolStripMenuItem.Text = "Test the archive";
-            this.testTheArchiveToolStripMenuItem.Click += new System.EventHandler(this.testTheArchiveToolStripMenuItem_Click);
-            // 
-            // removeTheFileToolStripMenuItem
-            // 
-            this.removeTheFileToolStripMenuItem.Image = global::FrontEnd.Properties.Resources.RemoveFile;
-            this.removeTheFileToolStripMenuItem.Name = "removeTheFileToolStripMenuItem";
-            this.removeTheFileToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-            this.removeTheFileToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.removeTheFileToolStripMenuItem.Text = "Remove the file";
-            this.removeTheFileToolStripMenuItem.Click += new System.EventHandler(this.removeTheFileToolStripMenuItem_Click);
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(56, 118);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(231, 245);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
+            this.createArchiveDialog.DefaultExt = "huf";
+            this.createArchiveDialog.Filter = "Huffman archives|*.huf";
+            this.createArchiveDialog.RestoreDirectory = true;
+            this.createArchiveDialog.SupportMultiDottedExtensions = true;
+            this.createArchiveDialog.Title = "Create an archive";
             // 
             // MainWindow
             // 
@@ -650,14 +669,15 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Huffman Archiver";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
+            this.Load += new System.EventHandler(this.MainWindow_Load);
             this.welcomePanel.ResumeLayout(false);
             this.welcomePanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ArchiveViewerPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ArchiveVIEWER)).EndInit();
             this.ButtonsPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -710,6 +730,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn compressedSize;
         private System.Windows.Forms.DataGridViewTextBoxColumn uncompressedSize;
         private System.Windows.Forms.DataGridViewTextBoxColumn compressionRatio;
+        public System.Windows.Forms.OpenFileDialog openArchiveDialog;
+        public System.Windows.Forms.SaveFileDialog createArchiveDialog;
     }
 }
 

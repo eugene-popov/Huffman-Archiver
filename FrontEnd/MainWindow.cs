@@ -104,12 +104,12 @@ namespace FrontEnd
 
         private void openArchiveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //Controller.controller.OpenArchive();
+            Controller.controller.OpenArchive();
         }
 
         private void OpenArchiveButton_Click(object sender, EventArgs e)
         {
-            //Controller.controller.OpenArchive();
+            Controller.controller.OpenArchive();
         }
 
         #endregion
@@ -232,6 +232,7 @@ namespace FrontEnd
         {
             if (e.CloseReason == CloseReason.UserClosing)
             {
+                e.Cancel = true;
                 Controller.controller.Exit();
             }
         }
@@ -249,5 +250,118 @@ namespace FrontEnd
 
         #endregion
 
+        #region Show Hide Controls
+
+        public void ShowWelcome()
+        {
+            welcomePanel.Visible = true;
+        }
+
+        public void HideWelcome()
+        {
+            welcomePanel.Visible = false;
+        }
+
+        public void ShowControlPanel()
+        {
+            ArchiveViewerPanel.Visible = true;
+
+        }
+
+        public void HideControlPanel()
+        {
+            ArchiveViewerPanel.Visible = false;
+        }
+        public void ShowViewer()
+        {
+            ArchiveVIEWER.Visible = true;
+        }
+
+        public void HideViewer()
+        {
+            ArchiveVIEWER.Visible = false;
+        }
+
+        public void ShowOpenedArchiveControls()
+        {
+            TestArchiveButton.BackgroundImage = Properties.Resources.TestArchive;
+            ExtractArchiveButton.BackgroundImage = Properties.Resources.ExtractArchive;
+            CloseArchiveButton.BackgroundImage = Properties.Resources.CloseArchive;
+            addFileButton.BackgroundImage = Properties.Resources.AddFile;
+            TestArchiveButton.Enabled = true;
+            ExtractArchiveButton.Enabled = true;
+            CloseArchiveButton.Enabled = true;
+            testTheArchiveToolStripMenuItem.Enabled = true;
+            theFileToolStripMenuItem.Enabled = true;
+            closeToolStripMenuItem.Enabled = true;
+            addFileToolStripMenuItem.Enabled = true;
+            addFileButton.Enabled = true;
+            
+        }
+        public void HideOpenedArchiveControls()
+        {
+            TestArchiveButton.BackgroundImage = Properties.Resources.TestArchiveINACTIVE;
+            ExtractArchiveButton.BackgroundImage = Properties.Resources.ExtractArchiveINACTIVE;
+            CloseArchiveButton.BackgroundImage = Properties.Resources.CloseArchiveINACTIVE;
+            addFileButton.BackgroundImage = Properties.Resources.AddFileINACTIVE;
+            TestArchiveButton.Enabled = false;
+            ExtractArchiveButton.Enabled = false;
+            CloseArchiveButton.Enabled = false;
+            testTheArchiveToolStripMenuItem.Enabled = false;
+            theFileToolStripMenuItem.Enabled = false;
+            closeToolStripMenuItem.Enabled = false;
+            addFileToolStripMenuItem.Enabled = false;
+            addFileButton.Enabled = false;
+            
+        }
+
+
+
+        public void ShowSelectedFileControls()
+        {
+            RemoveFileButton.BackgroundImage = Properties.Resources.RemoveFile;
+            TestFileButton.BackgroundImage = Properties.Resources.TestFile;
+            ExtractFileButton.BackgroundImage = Properties.Resources.ExtractFile;
+            ExtractFileButton.Enabled = true;
+            TestFileButton.Enabled = true;
+            RemoveFileButton.Enabled = true;
+            theArchiveToolStripMenuItem.Enabled = true;
+            testTheFileToolStripMenuItem1.Enabled = true;
+            removeTheFileToolStripMenuItem.Enabled = true;
+
+        }
+
+        public void HideSelectedFileControls()
+        {
+            RemoveFileButton.BackgroundImage = Properties.Resources.RemoveFileINACTIVE;
+            TestFileButton.BackgroundImage = Properties.Resources.TestFileINACTIVE;
+            ExtractFileButton.BackgroundImage = Properties.Resources.ExtractFileINACTIVE;
+            ExtractFileButton.Enabled = false;
+            TestFileButton.Enabled = false;
+            RemoveFileButton.Enabled = false;
+            theArchiveToolStripMenuItem.Enabled = false;
+            testTheFileToolStripMenuItem1.Enabled = false;
+            removeTheFileToolStripMenuItem.Enabled = false;
+        }
+
+        #endregion
+
+        private void MainWindow_Load(object sender, EventArgs e)
+        {
+            ShowWelcome();
+            HideControlPanel();
+            HideOpenedArchiveControls();
+            HideSelectedFileControls();
+        }
+
+        private void ArchiveVIEWER_SelectionChanged(object sender, EventArgs e)
+        {
+            Controller.controller.CheckSelection();
+        }
+
+        private void ArchiveVIEWER_VisibleChanged(object sender, EventArgs e)
+        {
+            Controller.controller.CheckSelection();
+        }
     }
 }
