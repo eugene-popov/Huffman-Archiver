@@ -9,6 +9,13 @@ namespace BackEnd
     /// </summary>
     public class Encoder
     {
+        public event Archive.ReportProgress OnByteProgress = delegate (int percentage) { };
+
+        public void SubscribeToUpdates(Archive.ReportProgress methodToSubscribe)
+        {
+            OnByteProgress += methodToSubscribe;
+        }
+
         #region Fields
 
         /// <summary>
@@ -114,11 +121,18 @@ namespace BackEnd
         /// </summary>
         public void Encode()
         {
+            long totalBytes = InputStream.Length;
             var bitWriter = new BitWriter(OutputStream);
-            
+            int currentTotal = 50; // current percentage (regarding compression process)
             int nextByte = InputStream.ReadByte();
             while (nextByte != -1)
             {
+                int newTotal = (int)(50 + (InputStream.Position * 1.0 / (totalBytes * 2)) * 100);
+                if (currentTotal < newTotal)
+                {
+                    currentTotal = newTotal;
+                    OnByteProgress(currentTotal);
+                }
                 var code = EncodingTable[nextByte];
                 for (int bitIndex = 0; bitIndex < code.Length; bitIndex++)
                     bitWriter.Write(code[bitIndex]);

@@ -13,6 +13,23 @@ namespace BackEnd
     [Serializable]
     public class FrequencyTable
     {
+        #region Events
+        /// <summary>
+        /// Event that occurs on percentage progress.
+        /// </summary>
+        [field: NonSerialized]
+        private event Archive.ReportProgress OnByteProgress = delegate (int percentage) { };
+
+        /// <summary>
+        /// Subscribe to percentage progress updates.
+        /// </summary>
+        /// <param name="methodToSubscribe">Method to invoke on updates.</param>
+        public void SubscribeToUpdates(Archive.ReportProgress methodToSubscribe)
+        {
+            OnByteProgress += methodToSubscribe;
+        }
+        #endregion
+
         #region Fields
 
         /// <summary>
@@ -37,6 +54,11 @@ namespace BackEnd
         /// The backing store of the frequency table, that contains frequency (0 if byte has not occured in the input stream, otherwise positive integer) for each byte from 0 to 255.
         /// </summary>
         private int[] _table = new int[FreqsInTable];
+
+        [NonSerialized]
+        private Stream inputStream;
+
+        private long totalBytes;
 
         #endregion
 
@@ -100,11 +122,24 @@ namespace BackEnd
         public FrequencyTable(Stream stream)
         {
             FillTableWithZeroes();
-            int nextByte = stream.ReadByte();
+            inputStream = stream;
+            totalBytes = stream.Length;
+        }
+
+        public void CountFrequencies()
+        {
+            int nextByte = inputStream.ReadByte();
+            int currentTotal = 0;
             while (nextByte != -1)
             {
+                int newTotal = (int) ((inputStream.Position *1.0/ (totalBytes * 2)) * 100);
+                if (currentTotal < newTotal)
+                {
+                    currentTotal = newTotal;
+                    OnByteProgress(currentTotal);
+                }
                 Increment(nextByte);
-                nextByte = stream.ReadByte();
+                nextByte = inputStream.ReadByte();
             }
         }
         
