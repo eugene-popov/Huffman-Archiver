@@ -56,13 +56,6 @@ namespace BackEnd
             #endregion
         }
 
-        public delegate void ReportStateChange(string newState);
-
-        public event ReportStateChange OnStateChange = delegate(string message) { };
-
-        public delegate void ReportProgress(int progress);
-
-        public event ReportProgress OnProgressChange = delegate (int percentage) {};
         #endregion
 
         #region Fields
@@ -83,6 +76,18 @@ namespace BackEnd
 
         #endregion
 
+        #region Events
+
+        public delegate void ReportStateChange(string newState);
+
+        public event ReportStateChange OnStateChange = delegate(string message) { };
+
+        public delegate void ReportProgress(int progress);
+
+        public event ReportProgress OnProgressChange = delegate(int percentage) { };
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -92,14 +97,13 @@ namespace BackEnd
         public Archive(string path)
         {
             _archive = Package.Open(path, FileMode.OpenOrCreate);
-            
         }
 
         #endregion
 
         #region Methods
 
-        #region File compression
+        #region Compression
 
         /// <summary>
         /// Compresses and adds the file stored in the specified <paramref name="path"/> to the archive.
@@ -112,7 +116,7 @@ namespace BackEnd
             /* check if file exists and can be read */
             if (!File.Exists(path))
             {
-                throw new IOException("The file in the provided path does not exist or cannot be read.");
+                throw new IOException("The file does not exist or cannot be read.");
             }
 
             var filename = Path.GetFileName(path);
@@ -130,7 +134,7 @@ namespace BackEnd
                 uncompressedSize = fileStream.Length;
                 uncompressedHash = ComputeHashCode(fileStream);
             }
-            
+
             /* compress the file and store the compressed file in the package part */
             CompressFile(path, filePart, out FrequencyTable frequencies);
             OnStateChange("calculating the compressed file's checksum");
@@ -142,13 +146,12 @@ namespace BackEnd
                 compressedSize = compressedPartStream.Length;
                 compressedHash = ComputeHashCode(compressedPartStream);
             }
+
             filePart.GetStream().Close();
             OnStateChange("storing metadata");
             /* store collected meta data of the added file in archive */
             StoreMetaData(filePart, frequencies, uncompressedHash, compressedHash
-            , ((double)((compressedSize * 1.0) / uncompressedSize)), uncompressedSize, compressedSize, filename);
-            
-            
+                , ((double) ((compressedSize * 1.0) / uncompressedSize)), uncompressedSize, compressedSize, filename);
         }
 
         public void Close()
@@ -172,7 +175,7 @@ namespace BackEnd
             frequencyTable.SubscribeToUpdates(OnProgressChange);
             frequencyTable.CountFrequencies();
             /* rewind the position of the stream to use this stream once again */
-            fileStream.Position = 0;          
+            fileStream.Position = 0;
             /* build the Huffman tree based on the counted frequencies */
             OnStateChange("building the Huffman tree");
             var huffmanTree = new HuffmanTree(frequencyTable);
@@ -187,24 +190,25 @@ namespace BackEnd
             encoder.SubscribeToUpdates(OnProgressChange);
             encoder.Encode();
             /* dispose unused streams */
-            fileStream.Close();        
+            fileStream.Close();
             filePartStream.Close();
         }
 
         #endregion
 
-        #region File decompression
+        #region Decompression
 
         public void ExtractFile(String partTitle)
         {
-           /* create path (relating to the archive root) where the compressed file is stored */
+            /* create path (relating to the archive root) where the compressed file is stored */
             Uri fileUri = PackUriHelper.CreatePartUri(new Uri(".\\" + Path.GetFileName(partTitle), UriKind.Relative));
             /* get the package part in the path */
             var filePart = _archive.GetPart(fileUri);
             /* get metadata of the file */
             var meta = GetMetaData(filePart);
             /* create decompressed file's stream */
-            var fileStream = new FileStream(Path.GetFileName(partTitle), FileMode.Create, FileAccess.Write, FileShare.Read, BufferSize);
+            var fileStream = new FileStream(Path.GetFileName(partTitle), FileMode.Create, FileAccess.Write,
+                FileShare.Read, BufferSize);
             var compressedStream = new BufferedStream(filePart.GetStream(), BufferSize);
             DecompressFile(compressedStream, fileStream, meta);
             /* close unused streams */
@@ -222,7 +226,7 @@ namespace BackEnd
 
         #endregion
 
-        #region File deletion
+        #region Deletion
 
         public void DeleteFile(Uri uri)
         {
@@ -231,6 +235,7 @@ namespace BackEnd
             {
                 throw new FileNotFoundException("No file with the specified name exist.");
             }
+
             /* delete meta */
             _archive.DeletePart(GetMetaPartUri(_archive.GetPart(uri)));
             /* delete the file */
@@ -238,6 +243,62 @@ namespace BackEnd
         }
 
         #endregion
+
+        #region Test
+
+        /// <summary>
+        /// Tests file.
+        /// </summary>
+        /// <param name="fileUri">The uri of the file to be tested.</param>
+        /// <returns>Test result.</returns>
+        public bool TestFile(Uri fileUri)
+        {
+            var part = _archive.GetPart(fileUri);
+            var meta = GetMetaData(part);
+            var storedHashSum = meta.compressedHash;
+            byte[] calculatedHashSum;
+            using (var stream = part.GetStream())
+            {
+                calculatedHashSum = ComputeHashCode(stream);
+            }
+
+            bool result = true;
+
+            for (int i = 0; i < storedHashSum.Length; i++)
+            {
+                result = result && storedHashSum[i] == calculatedHashSum[i]; 
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Tests all the compressed files in the archive.
+        /// </summary>
+        /// <param name="damagedFiles">List of damaged files' names.</param>
+        /// <returns>If the archive contains at least one damaged file.</returns>
+        public bool TestArchive(out List<string> damagedFiles)
+        {
+            damagedFiles = new List<string>();
+            bool result = true;
+            var files = GetFiles();
+            int number = 1;
+            foreach (var filePart in files)
+            {
+                OnStateChange("file " + number++ + " of " + files.Count);
+                var uri = filePart.Uri;
+                var meta = GetMetaData(filePart);
+                var fileTestResult = TestFile(uri);
+                if (!fileTestResult)
+                {
+                    damagedFiles.Add(meta.filename);
+                }
+                result = result && fileTestResult;
+            }
+            return result;
+        }
+        #endregion
+
 
         #region View
 
@@ -248,62 +309,48 @@ namespace BackEnd
         public List<List<object>> GetView()
         {
             var info = new List<List<object>>();
-            /* get all files and their relationships (there are only relationships between archived files and their metadata stored in the package, so the relationsips indicate only those files that we need to show)*/
-            var parts = _archive.GetParts();
-            foreach (var part in parts)
+            /* get all files */
+            var files = GetFiles();
+            foreach (var part in files)
             {
-                /* try to get get relations owned by this file */
-                try
+                /* get meta of the file */
+                var meta = GetMetaData(part);
+                /* now collect all the info about the file */
+                var uri = part.Uri;
+                var name = meta.filename;
+                var compressedSizeValue = meta.compressedSize;
+                string compressedSize;
+                if (compressedSizeValue > 1024 * 1024)
                 {
-                    var rels = part.GetRelationships();
-                    if (rels.Count() != 0)
-                        /* there is a relation owned by this file (thus the file is a compressed file (not meta or package's meta)) */
-                    {
-                        /* get meta of the file */
-                        var meta = GetMetaData(part);
-                        /* now collect all the info about the file */
-                        var uri = part.Uri;
-                        var name = meta.filename;
-                        var compressedSizeValue = meta.compressedSize;
-                        string compressedSize;
-                        if (compressedSizeValue > 1024 * 1024)
-                        {
-                            compressedSize = ((double) compressedSizeValue / (1024 * 1024)).ToString("F2") + " MB";
-                        }
-                        else if (compressedSizeValue > 1024)
-                        {
-                            compressedSize = ((double) compressedSizeValue / 1024).ToString("F2") + " kB";
-                        }
-                        else
-                        {
-                            compressedSize = compressedSizeValue + " bytes";
-                        }
-
-                        var uncompressedSizeValue = meta.uncompressedSize;
-                        string uncompressedSize;
-                        if (compressedSizeValue > 1024 * 1024)
-                        {
-                            uncompressedSize = ((double) uncompressedSizeValue / (1024 * 1024)).ToString("F2") + " MB";
-                        }
-                        else if (compressedSizeValue > 1024)
-                        {
-                            uncompressedSize = ((double) uncompressedSizeValue / 1024).ToString("F2") + " kB";
-                        }
-                        else
-                        {
-                            uncompressedSize = uncompressedSizeValue + " bytes";
-                        }
-
-                        var ratio = ((1 - meta.compressionRatio)*100).ToString("F2") + "%";
-                        /* now add the collected data */
-                        info.Add(new List<object>() {uri, name, compressedSize, uncompressedSize, ratio});
-
-                    }
+                    compressedSize = ((double) compressedSizeValue / (1024 * 1024)).ToString("F2") + " MB";
                 }
-                catch (InvalidOperationException)
+                else if (compressedSizeValue > 1024)
                 {
-                    /* relationships file cannot have relations */
+                    compressedSize = ((double) compressedSizeValue / 1024).ToString("F2") + " kB";
                 }
+                else
+                {
+                    compressedSize = compressedSizeValue + " bytes";
+                }
+
+                var uncompressedSizeValue = meta.uncompressedSize;
+                string uncompressedSize;
+                if (compressedSizeValue > 1024 * 1024)
+                {
+                    uncompressedSize = ((double) uncompressedSizeValue / (1024 * 1024)).ToString("F2") + " MB";
+                }
+                else if (compressedSizeValue > 1024)
+                {
+                    uncompressedSize = ((double) uncompressedSizeValue / 1024).ToString("F2") + " kB";
+                }
+                else
+                {
+                    uncompressedSize = uncompressedSizeValue + " bytes";
+                }
+
+                var ratio = ((1 - meta.compressionRatio) * 100).ToString("F2") + "%";
+                /* now add the collected data */
+                info.Add(new List<object>() {uri, name, compressedSize, uncompressedSize, ratio});
             }
 
             return info;
@@ -312,6 +359,35 @@ namespace BackEnd
         #endregion
 
         #region Utility Methods
+
+        /// <summary>
+        /// Get all compressed files of the archive. 
+        /// </summary>
+        /// <returns>Compressed files of the archive.</returns>
+        private List<PackagePart> GetFiles()
+        {
+            var files = new List<PackagePart>();
+            var parts = _archive.GetParts();
+            foreach (var part in parts)
+            {
+                /* try to get get relations owned by this file */
+                try
+                {
+                    var rels = part.GetRelationships();
+                    if (rels.Count() != 0)
+                    {
+                        /* the part owns the relationspit, so it must be a compressed file */
+                        files.Add(part);
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    /* relationships file cannot have relations */
+                }
+            }
+
+            return files;
+        }
 
         private Uri GetMetaPartUri(PackagePart part)
         {
@@ -336,7 +412,7 @@ namespace BackEnd
             using (var metaStream = metaPart.GetStream())
             {
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
-                meta = (FileMetaData)binaryFormatter.Deserialize(metaStream);
+                meta = (FileMetaData) binaryFormatter.Deserialize(metaStream);
             }
 
             return meta;
@@ -379,9 +455,6 @@ namespace BackEnd
                 var formatter = new BinaryFormatter();
                 formatter.Serialize(metaStream, meta);
             }
-
-
-
         }
 
         /// <summary>
@@ -401,7 +474,6 @@ namespace BackEnd
         }
 
         #endregion
-
 
         #endregion
     }
