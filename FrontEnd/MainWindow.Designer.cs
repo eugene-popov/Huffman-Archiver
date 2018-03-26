@@ -59,10 +59,6 @@
             this.aboutHuffmanArchiverToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ArchiveViewerPanel = new System.Windows.Forms.Panel();
             this.ArchiveVIEWER = new System.Windows.Forms.DataGridView();
-            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.compressedSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.uncompressedSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.compressionRatio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ButtonsPanel = new System.Windows.Forms.Panel();
             this.ExitButton = new System.Windows.Forms.Button();
             this.CloseArchiveButton = new System.Windows.Forms.Button();
@@ -77,6 +73,11 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.openArchiveDialog = new System.Windows.Forms.OpenFileDialog();
             this.createArchiveDialog = new System.Windows.Forms.SaveFileDialog();
+            this.Uri = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.compressedSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.uncompressedSize = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.compressionRatio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.welcomePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -385,6 +386,7 @@
             this.ArchiveVIEWER.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             this.ArchiveVIEWER.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ArchiveVIEWER.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Uri,
             this.name,
             this.compressedSize,
             this.uncompressedSize,
@@ -400,34 +402,6 @@
             this.ArchiveVIEWER.TabIndex = 2;
             this.ArchiveVIEWER.SelectionChanged += new System.EventHandler(this.ArchiveVIEWER_SelectionChanged);
             this.ArchiveVIEWER.VisibleChanged += new System.EventHandler(this.ArchiveVIEWER_VisibleChanged);
-            // 
-            // name
-            // 
-            this.name.HeaderText = "Name";
-            this.name.Name = "name";
-            this.name.ReadOnly = true;
-            this.name.Width = 165;
-            // 
-            // compressedSize
-            // 
-            this.compressedSize.HeaderText = "Compressed size";
-            this.compressedSize.Name = "compressedSize";
-            this.compressedSize.ReadOnly = true;
-            this.compressedSize.Width = 164;
-            // 
-            // uncompressedSize
-            // 
-            this.uncompressedSize.HeaderText = "Uncompressed size";
-            this.uncompressedSize.Name = "uncompressedSize";
-            this.uncompressedSize.ReadOnly = true;
-            this.uncompressedSize.Width = 165;
-            // 
-            // compressionRatio
-            // 
-            this.compressionRatio.HeaderText = "Compression ratio";
-            this.compressionRatio.Name = "compressionRatio";
-            this.compressionRatio.ReadOnly = true;
-            this.compressionRatio.Width = 164;
             // 
             // ButtonsPanel
             // 
@@ -652,6 +626,41 @@
             this.createArchiveDialog.SupportMultiDottedExtensions = true;
             this.createArchiveDialog.Title = "Create an archive";
             // 
+            // Uri
+            // 
+            this.Uri.HeaderText = "Uri (not visible)";
+            this.Uri.Name = "Uri";
+            this.Uri.ReadOnly = true;
+            this.Uri.Visible = false;
+            // 
+            // name
+            // 
+            this.name.HeaderText = "Name";
+            this.name.Name = "name";
+            this.name.ReadOnly = true;
+            this.name.Width = 165;
+            // 
+            // compressedSize
+            // 
+            this.compressedSize.HeaderText = "Compressed size";
+            this.compressedSize.Name = "compressedSize";
+            this.compressedSize.ReadOnly = true;
+            this.compressedSize.Width = 164;
+            // 
+            // uncompressedSize
+            // 
+            this.uncompressedSize.HeaderText = "Uncompressed size";
+            this.uncompressedSize.Name = "uncompressedSize";
+            this.uncompressedSize.ReadOnly = true;
+            this.uncompressedSize.Width = 165;
+            // 
+            // compressionRatio
+            // 
+            this.compressionRatio.HeaderText = "Compression ratio";
+            this.compressionRatio.Name = "compressionRatio";
+            this.compressionRatio.ReadOnly = true;
+            this.compressionRatio.Width = 164;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -726,12 +735,13 @@
         private System.Windows.Forms.ToolStripMenuItem testTheFileToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem testTheArchiveToolStripMenuItem;
         public System.Windows.Forms.DataGridView ArchiveVIEWER;
+        public System.Windows.Forms.OpenFileDialog openArchiveDialog;
+        public System.Windows.Forms.SaveFileDialog createArchiveDialog;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Uri;
         private System.Windows.Forms.DataGridViewTextBoxColumn name;
         private System.Windows.Forms.DataGridViewTextBoxColumn compressedSize;
         private System.Windows.Forms.DataGridViewTextBoxColumn uncompressedSize;
         private System.Windows.Forms.DataGridViewTextBoxColumn compressionRatio;
-        public System.Windows.Forms.OpenFileDialog openArchiveDialog;
-        public System.Windows.Forms.SaveFileDialog createArchiveDialog;
     }
 }
 

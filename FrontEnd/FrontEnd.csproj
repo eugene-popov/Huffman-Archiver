@@ -101,6 +101,19 @@
     <Compile Include="ShortcutsWindow.Designer.cs">
       <DependentUpon>ShortcutsWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="TestArchiveWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestArchiveWindow.Designer.cs">
+      <DependentUpon>TestArchiveWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TestFileWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TestFileWindow.Designer.cs">
+      <DependentUpon>TestFileWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Time.cs" />
     <EmbeddedResource Include="AboutWindow.resx">
       <DependentUpon>AboutWindow.cs</DependentUpon>
     </EmbeddedResource>
@@ -122,6 +135,12 @@
     </Compile>
     <EmbeddedResource Include="ShortcutsWindow.resx">
       <DependentUpon>ShortcutsWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestArchiveWindow.resx">
+      <DependentUpon>TestArchiveWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TestFileWindow.resx">
+      <DependentUpon>TestFileWindow.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="FrontEnd_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">

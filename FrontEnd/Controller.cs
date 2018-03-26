@@ -16,10 +16,31 @@ namespace FrontEnd
         public MainWindow mainWindow;
         public static Controller controller;
         private Archive archive = null;
-        private List<List<object>> filesInfo = null;
         private bool rowSelected = false;
         private DataGridViewRow row = null;
 
+        #region EventSubscribtion
+
+        public void SubscribeToStateUpdates(Archive.ReportStateChange methodToSubscribe)
+        {
+            archive.OnStateChange += methodToSubscribe;
+        }
+
+        public void UnsubscribeFromStateUpdates(Archive.ReportStateChange methodToUnsubscribe)
+        {
+            archive.OnStateChange -= methodToUnsubscribe;
+        }
+
+        public void SubscribeToPercentageUpdates(Archive.ReportProgress methodToSubscribe)
+        {
+            archive.OnProgressChange += methodToSubscribe;
+        }
+
+        public void UnsubscribeToPercentageUpdates(Archive.ReportProgress methodToUnsubscribe)
+        {
+            archive.OnProgressChange -= methodToUnsubscribe;
+        }
+        #endregion
         public void CreateArchive()
         {
             if (mainWindow.createArchiveDialog.ShowDialog() == DialogResult.OK)
@@ -70,12 +91,14 @@ namespace FrontEnd
             
         }
 
-        
-
-
         public void TestArchive()
         {
+            new TestArchiveWindow().ShowDialog();
+        }
 
+        public bool TestFilesInArchive()
+        {
+            return archive.TestArchive(out List<string> damaged);
         }
 
         public void ExtractArchive()
@@ -124,6 +147,7 @@ namespace FrontEnd
             archive.AddFile(path);
             return;
         }
+
         public void ExtractFile()
         {
 
@@ -131,20 +155,34 @@ namespace FrontEnd
 
         public void TestFile()
         {
+            if (rowSelected)
+            {
+                new TestFileWindow().ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No file chosen to be tested.", "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+            }
+        }
 
+        public bool TestSelectedFile()
+        {
+            Uri selectedFileUri = (Uri)row.Cells[0].Value;
+            return archive.TestFile(selectedFileUri);
         }
 
         public void RemoveFile()
         {
             if (rowSelected)
             {
-                var filename = (string) row.Cells[0].Value;
+                var filename = (string) row.Cells[1].Value;
                 var answer = MessageBox.Show("Do you want to remove "+ filename + " from the archive?", "Confirm removing", MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                 if (answer == DialogResult.Yes)
                 {
                    /* find the file's uri */
-                    var uri = (Uri) filesInfo.Find(element => ((string) element[1]).Equals(filename))[0];
+                    Uri uri = (Uri) row.Cells[0].Value;
                     /* remove file */
                     archive.DeleteFile(uri);
                     RefreshView();
@@ -159,25 +197,15 @@ namespace FrontEnd
         
         public void RefreshView()
         {
-            filesInfo = archive.GetView();
+            var filesInfo = archive.GetView();
             mainWindow.ArchiveVIEWER.Rows.Clear();
             foreach (var file in filesInfo)
             {
-                mainWindow.ArchiveVIEWER.Rows.Add(file[1], file[2], file[3], file[4]);
+                mainWindow.ArchiveVIEWER.Rows.Add(file[0], file[1], file[2], file[3], file[4]);
             } 
             
         }
 
-        public void SubscribeToStateUpdates(Archive.ReportStateChange methodToSubscribe)
-        {
-            archive.OnStateChange += methodToSubscribe;
-        }
-
-        public void SubscribeToPercentageUpdates(Archive.ReportProgress methodToSubscribe)
-        {
-            archive.OnProgressChange += methodToSubscribe;
-
-        }
         public void Exit()
         {
             if (ArchiveOpened)

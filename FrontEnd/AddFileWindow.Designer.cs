@@ -48,8 +48,18 @@
             this.timerText = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.backgroundCompressor1 = new System.ComponentModel.BackgroundWorker();
+            this.errorPanel = new System.Windows.Forms.Panel();
+            this.error = new System.Windows.Forms.Label();
+            this.okErrorButton = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.resultPanel = new System.Windows.Forms.Panel();
+            this.totalTime = new System.Windows.Forms.Label();
+            this.okResultButton = new System.Windows.Forms.Label();
+            this.message = new System.Windows.Forms.Label();
             this.selectionPanel.SuspendLayout();
             this.compressionPanel.SuspendLayout();
+            this.errorPanel.SuspendLayout();
+            this.resultPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // selectionPanel
@@ -71,7 +81,7 @@
             this.file.AutoSize = true;
             this.file.Font = new System.Drawing.Font("Tahoma", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.file.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.file.Location = new System.Drawing.Point(88, 62);
+            this.file.Location = new System.Drawing.Point(88, 79);
             this.file.Name = "file";
             this.file.Size = new System.Drawing.Size(189, 39);
             this.file.TabIndex = 5;
@@ -82,7 +92,7 @@
             this.select.AutoSize = true;
             this.select.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.select.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.select.Location = new System.Drawing.Point(395, 72);
+            this.select.Location = new System.Drawing.Point(425, 87);
             this.select.Name = "select";
             this.select.Size = new System.Drawing.Size(92, 29);
             this.select.TabIndex = 4;
@@ -94,7 +104,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Tahoma", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label4.Location = new System.Drawing.Point(12, 59);
+            this.label4.Location = new System.Drawing.Point(12, 76);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(87, 45);
             this.label4.TabIndex = 3;
@@ -233,13 +243,112 @@
             this.backgroundCompressor1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundCompressor1_ProgressChanged);
             this.backgroundCompressor1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundCompressor1_RunWorkerCompleted);
             // 
+            // errorPanel
+            // 
+            this.errorPanel.Controls.Add(this.error);
+            this.errorPanel.Controls.Add(this.okErrorButton);
+            this.errorPanel.Controls.Add(this.label3);
+            this.errorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.errorPanel.Location = new System.Drawing.Point(0, 0);
+            this.errorPanel.Name = "errorPanel";
+            this.errorPanel.Size = new System.Drawing.Size(531, 196);
+            this.errorPanel.TabIndex = 13;
+            this.errorPanel.Visible = false;
+            // 
+            // error
+            // 
+            this.error.AutoSize = true;
+            this.error.Font = new System.Drawing.Font("Tahoma", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.error.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.error.Location = new System.Drawing.Point(16, 89);
+            this.error.Name = "error";
+            this.error.Size = new System.Drawing.Size(51, 23);
+            this.error.TabIndex = 13;
+            this.error.Text = "error";
+            this.error.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // okErrorButton
+            // 
+            this.okErrorButton.AutoSize = true;
+            this.okErrorButton.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.okErrorButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.okErrorButton.Location = new System.Drawing.Point(481, 163);
+            this.okErrorButton.Name = "okErrorButton";
+            this.okErrorButton.Size = new System.Drawing.Size(45, 29);
+            this.okErrorButton.TabIndex = 12;
+            this.okErrorButton.Text = "ok";
+            this.okErrorButton.Click += new System.EventHandler(this.okErrorButton_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label3.Location = new System.Drawing.Point(30, 43);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(457, 35);
+            this.label3.TabIndex = 11;
+            this.label3.Text = "Compression failed due to an error\r\n";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // resultPanel
+            // 
+            this.resultPanel.Controls.Add(this.totalTime);
+            this.resultPanel.Controls.Add(this.okResultButton);
+            this.resultPanel.Controls.Add(this.message);
+            this.resultPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.resultPanel.Location = new System.Drawing.Point(0, 0);
+            this.resultPanel.Name = "resultPanel";
+            this.resultPanel.Size = new System.Drawing.Size(531, 196);
+            this.resultPanel.TabIndex = 0;
+            this.resultPanel.Visible = false;
+            // 
+            // totalTime
+            // 
+            this.totalTime.AutoSize = true;
+            this.totalTime.Font = new System.Drawing.Font("Tahoma", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.totalTime.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.totalTime.Location = new System.Drawing.Point(14, 104);
+            this.totalTime.Name = "totalTime";
+            this.totalTime.Size = new System.Drawing.Size(71, 35);
+            this.totalTime.TabIndex = 11;
+            this.totalTime.Text = "time";
+            this.totalTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // okResultButton
+            // 
+            this.okResultButton.AutoSize = true;
+            this.okResultButton.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.okResultButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.okResultButton.Location = new System.Drawing.Point(460, 158);
+            this.okResultButton.Name = "okResultButton";
+            this.okResultButton.Size = new System.Drawing.Size(45, 29);
+            this.okResultButton.TabIndex = 10;
+            this.okResultButton.Text = "ok";
+            this.okResultButton.Click += new System.EventHandler(this.okResultButton_Click);
+            // 
+            // message
+            // 
+            this.message.AutoSize = true;
+            this.message.Font = new System.Drawing.Font("Tahoma", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.message.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.message.Location = new System.Drawing.Point(12, 34);
+            this.message.Name = "message";
+            this.message.Size = new System.Drawing.Size(493, 70);
+            this.message.TabIndex = 9;
+            this.message.Text = "The file has been successfully \r\ncompressed and added to the archive";
+            this.message.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // AddFileWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(531, 196);
-            this.Controls.Add(this.compressionPanel);
+            this.ControlBox = false;
             this.Controls.Add(this.selectionPanel);
+            this.Controls.Add(this.resultPanel);
+            this.Controls.Add(this.compressionPanel);
+            this.Controls.Add(this.errorPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -251,6 +360,10 @@
             this.selectionPanel.PerformLayout();
             this.compressionPanel.ResumeLayout(false);
             this.compressionPanel.PerformLayout();
+            this.errorPanel.ResumeLayout(false);
+            this.errorPanel.PerformLayout();
+            this.resultPanel.ResumeLayout(false);
+            this.resultPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -275,5 +388,13 @@
         private System.Windows.Forms.Label taskFour;
         private System.Windows.Forms.Label taskTwo;
         private System.Windows.Forms.Label taskOne;
+        private System.Windows.Forms.Panel errorPanel;
+        private System.Windows.Forms.Panel resultPanel;
+        private System.Windows.Forms.Label totalTime;
+        private System.Windows.Forms.Label okResultButton;
+        private System.Windows.Forms.Label message;
+        private System.Windows.Forms.Label okErrorButton;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label error;
     }
 }
