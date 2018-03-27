@@ -70,6 +70,10 @@ namespace BackEnd
         /// </summary>
         private const int BufferSize = 1024 * 1024 * 4;
 
+        /// <summary>
+        /// The name of the archive.
+        /// </summary>
+        private string _archiveName;
         #endregion
 
         #region Properties
@@ -79,11 +83,21 @@ namespace BackEnd
         #region Events
 
         public delegate void ReportStateChange(string newState);
-
+        /// <summary>
+        /// Raises when the state (i. e. the task (or the file) being performed) changes
+        /// </summary>
         public event ReportStateChange OnStateChange = delegate(string message) { };
 
-        public delegate void ReportProgress(int progress);
+        public delegate void ReportCurrentFileChange(string newFile);
+        /// <summary>
+        /// Raises when the file being processed changes (should be like: current file index of total)
+        /// </summary>
+        public event ReportCurrentFileChange OnCurrentFileChange = delegate (string message) { };
 
+        public delegate void ReportProgress(int progress);
+        /// <summary>
+        /// Raises when progress (represented as percentage) changes
+        /// </summary>
         public event ReportProgress OnProgressChange = delegate(int percentage) { };
 
         #endregion
@@ -97,6 +111,7 @@ namespace BackEnd
         public Archive(string path)
         {
             _archive = Package.Open(path, FileMode.OpenOrCreate);
+            _archiveName = Path.GetFileNameWithoutExtension(path);
         }
 
         #endregion
@@ -123,6 +138,16 @@ namespace BackEnd
 
             /* create path (relating to the archive root) where a compressed file will be stored */
             Uri fileUri = PackUriHelper.CreatePartUri(new Uri(".\\" + filename.Replace(" ", ""), UriKind.Relative));
+            int filesCounter = 1;
+            while (_archive.PartExists(fileUri))
+            {
+                var newFileName = filename + " (" + filesCounter++ + ")";
+                fileUri = PackUriHelper.CreatePartUri(new Uri(".\\" + newFileName, UriKind.Relative));
+                if (!_archive.PartExists(fileUri))
+                {
+                    filename = newFileName;
+                }
+            }
             /* create a package part in the path */
             PackagePart filePart = _archive.CreatePart(fileUri, "", CompressionOption.NotCompressed);
             OnStateChange("calculating the uncompressed file's checksum");
@@ -198,29 +223,80 @@ namespace BackEnd
 
         #region Decompression
 
-        public void ExtractFile(String partTitle)
+        /// <summary>
+        /// Extracts file from the archive.
+        /// </summary>
+        /// <param name="fileUri">The uri of the file to be extracted.</param>
+        /// <param name="path">The path to extract file to.</param>
+        public void ExtractFile(Uri fileUri, string path, bool messages)
         {
-            /* create path (relating to the archive root) where the compressed file is stored */
-            Uri fileUri = PackUriHelper.CreatePartUri(new Uri(".\\" + Path.GetFileName(partTitle), UriKind.Relative));
             /* get the package part in the path */
             var filePart = _archive.GetPart(fileUri);
             /* get metadata of the file */
             var meta = GetMetaData(filePart);
             /* create decompressed file's stream */
-            var fileStream = new FileStream(Path.GetFileName(partTitle), FileMode.Create, FileAccess.Write,
-                FileShare.Read, BufferSize);
-            var compressedStream = new BufferedStream(filePart.GetStream(), BufferSize);
-            DecompressFile(compressedStream, fileStream, meta);
+            using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write,
+                FileShare.Read, BufferSize))
+            {
+                using (var compressedStream = new BufferedStream(filePart.GetStream(), BufferSize))
+                {
+                    DecompressFile(compressedStream, fileStream, meta, messages);
+                }
+
+            }
+
             /* close unused streams */
-            fileStream.Close();
-            compressedStream.Close();
+            filePart.GetStream().Close();
         }
 
-        private void DecompressFile(Stream compressed, Stream decompressed, FileMetaData meta)
+        /// <summary>
+        /// Extracts the archive to the selected <paramref name="path"/>.
+        /// </summary>
+        /// <param name="path">The path to extract the archive to.</param>
+        public void ExtractArchive(string path)
         {
+            /* create a new directory that will contain all the archive contents */
+            path = Path.Combine(path, _archiveName + " extracted");
+            /* create a directory to extract the archive to */
+            Directory.CreateDirectory(path);
+            var files = GetFiles();
+            var total = files.Count;
+            int current = 1;
+            foreach(var file in files)
+            {
+                OnCurrentFileChange("file " + current++ + " of " + total);
+                var meta = GetMetaData(file);
+                var filename = meta.filename;
+                OnStateChange(filename);
+                var filePath = Path.Combine(path, filename);
+                ExtractFile(file.Uri, filePath, false);
+            }
+        }
+
+        /// <summary>
+        /// Decompressed a compressed stream.
+        /// </summary>
+        /// <param name="compressed">The compressed stream to be decompressed.</param>
+        /// <param name="decompressed">The stream to write decompressed data to.</param>
+        /// <param name="meta">Metadata to retrieve the Huffman tree from.</param>
+        private void DecompressFile(Stream compressed, Stream decompressed, FileMetaData meta, bool informOfProgress)
+        {
+            if (informOfProgress)
+            {
+                OnStateChange("restoring the frequency table");
+            }
             var frequencies = meta.frequencyTable;
             var bytesCount = meta.uncompressedSize;
+            if (informOfProgress)
+            {
+                OnStateChange("building the Huffman tree");
+            }
             var decoder = new Decoder(compressed, decompressed, frequencies, bytesCount);
+            decoder.SubscribeToUpdates(OnProgressChange);
+            if (informOfProgress)
+            {
+                OnStateChange("decoding the file");
+            }
             decoder.Decode();
         }
 
@@ -285,7 +361,7 @@ namespace BackEnd
             int number = 1;
             foreach (var filePart in files)
             {
-                OnStateChange("file " + number++ + " of " + files.Count);
+                OnCurrentFileChange("file " + number++ + " of " + files.Count);
                 var uri = filePart.Uri;
                 var meta = GetMetaData(filePart);
                 var fileTestResult = TestFile(uri);
