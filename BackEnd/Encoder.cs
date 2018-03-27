@@ -9,13 +9,15 @@ namespace BackEnd
     /// </summary>
     public class Encoder
     {
+#region Events
+        
         public event Archive.ReportProgress OnByteProgress = delegate (int percentage) { };
 
         public void SubscribeToUpdates(Archive.ReportProgress methodToSubscribe)
         {
             OnByteProgress += methodToSubscribe;
         }
-
+#endregion
         #region Fields
 
         /// <summary>

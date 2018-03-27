@@ -42,6 +42,7 @@
     <Compile Include="BitReader.cs" />
     <Compile Include="BitWriter.cs" />
     <Compile Include="Decoder.cs" />
+    <Compile Include="DecodingTable.cs" />
     <Compile Include="Encoder.cs" />
     <Compile Include="FrequencyTable.cs" />
     <Compile Include="EncodingTable.cs" />

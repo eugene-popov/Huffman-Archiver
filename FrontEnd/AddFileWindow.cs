@@ -22,7 +22,6 @@ namespace FrontEnd
         private string shortname;
         private string filename;
         private Time time;
-        private Queue<string> messageQueue;
         private int filledTaskLabels = 0;
         private bool compressionCompleted = false;
 
@@ -42,9 +41,9 @@ namespace FrontEnd
             {
                 path = addFileDialog.FileName;
                 filename = Path.GetFileName(path);
-                if (filename.Length > 17)
+                if (filename.Length > 15)
                 {
-                    shortname = filename.Substring(0, 17) + "...";
+                    shortname = filename.Substring(0, 15) + "...";
                 }
                 else
                 {
@@ -70,8 +69,6 @@ namespace FrontEnd
                 compressionPanel.Visible = true;
                 time = new Time();
                 timer1.Enabled = true;
-
-                messageQueue = new Queue<string>();
 
                 backgroundCompressor1.RunWorkerAsync(path);
             }
@@ -115,7 +112,7 @@ namespace FrontEnd
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (compressionCompleted && messageQueue.Count == 0)
+            if (compressionCompleted)
             {
                 /* if all the messages have been printed and no more messages will appear, end timer and change screen */
                 timer1.Enabled = false;
