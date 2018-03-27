@@ -31,6 +31,15 @@ namespace FrontEnd
             archive.OnStateChange -= methodToUnsubscribe;
         }
 
+        public void SubscribeToFileUpdates(Archive.ReportCurrentFileChange methodToSubscribe)
+        {
+            archive.OnCurrentFileChange += methodToSubscribe;
+        }
+
+        public void UnsubscribeFromFileUpdates(Archive.ReportCurrentFileChange methodToUnsubscribe)
+        {
+            archive.OnCurrentFileChange -= methodToUnsubscribe;
+        }
         public void SubscribeToPercentageUpdates(Archive.ReportProgress methodToSubscribe)
         {
             archive.OnProgressChange += methodToSubscribe;
@@ -45,13 +54,29 @@ namespace FrontEnd
         {
             if (mainWindow.createArchiveDialog.ShowDialog() == DialogResult.OK)
             {
-                archive = new Archive(mainWindow.createArchiveDialog.FileName);
-                ArchiveOpened = true;
-                RefreshView();
-                mainWindow.HideWelcome();
-                mainWindow.ShowControlPanel();
-                mainWindow.ShowViewer();
-                mainWindow.ShowOpenedArchiveControls();
+                void create ()
+                {
+                    archive = new Archive(mainWindow.createArchiveDialog.FileName);
+                    ArchiveOpened = true;
+                    RefreshView();
+                    mainWindow.HideWelcome();
+                    mainWindow.ShowControlPanel();
+                    mainWindow.ShowViewer();
+                    mainWindow.ShowOpenedArchiveControls();
+                }
+
+                if (ArchiveOpened)
+                {
+                    bool archiveHasBeenClosed = CloseArchive();
+                    if (archiveHasBeenClosed)
+                    {
+                        create();
+                    }
+                }
+                else
+                {
+                    create();
+                }
             }
             
         }
@@ -93,7 +118,15 @@ namespace FrontEnd
 
         public void TestArchive()
         {
-            new TestArchiveWindow().ShowDialog();
+            if (ArchiveOpened)
+            {
+                new TestArchiveWindow().ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No archive opened to be tested.", "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+            }
         }
 
         public bool TestFilesInArchive()
@@ -103,9 +136,21 @@ namespace FrontEnd
 
         public void ExtractArchive()
         {
-
+            if (ArchiveOpened)
+            {
+                new ExtractArchiveWindow().ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No archive opened to be extracted.", "Error", MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+            }
         }
 
+        public void ExtractArchiveTo(string path)
+        {
+            archive.ExtractArchive(path);
+        }
         public bool CloseArchive()
         {
             if (ArchiveOpened)
@@ -150,7 +195,22 @@ namespace FrontEnd
 
         public void ExtractFile()
         {
+            if (rowSelected)
+            {
+                new ExtractFileWindow((string) row.Cells[1].Value).ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show("No file chosen to be extracted.", "Error", MessageBoxButtons.OK,
+    MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
+            }
+            
+        }
 
+        public void ExtractSelectedFile(string path)
+        {
+            Uri selectedFileUri = (Uri)row.Cells[0].Value;
+            archive.ExtractFile(selectedFileUri, path, true);
         }
 
         public void TestFile()
@@ -186,6 +246,7 @@ namespace FrontEnd
                     /* remove file */
                     archive.DeleteFile(uri);
                     RefreshView();
+                    CheckSelection();
                 }
             }
             else
@@ -210,8 +271,10 @@ namespace FrontEnd
         {
             if (ArchiveOpened)
             {
-                CloseArchive();
-                Application.Exit();
+                if (CloseArchive())
+                {
+                    Application.Exit();
+                }
             }
             else
             {
@@ -226,7 +289,7 @@ namespace FrontEnd
 
         public void CheckSelection()
         {
-            if (mainWindow.ArchiveVIEWER.CurrentRow != null)
+            if (mainWindow.ArchiveVIEWER.Rows.Count != 0 && mainWindow.ArchiveVIEWER.CurrentRow != null)
             {
                 rowSelected = true;
                 row = mainWindow.ArchiveVIEWER.CurrentRow;
