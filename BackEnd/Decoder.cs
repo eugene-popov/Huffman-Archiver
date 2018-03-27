@@ -1,11 +1,23 @@
 ﻿using System;
 using System.IO;
 using BackEnd.Tree;
+using System.Collections.Generic;
 
 namespace BackEnd
 {
     public class Decoder
     {
+
+        #region Events
+
+        public event Archive.ReportProgress OnByteProgress = delegate (int percentage) { };
+
+        public void SubscribeToUpdates(Archive.ReportProgress methodToSubscribe)
+        {
+            OnByteProgress += methodToSubscribe;
+        }
+        #endregion
+
         #region Fields
 
         /// <summary>
@@ -121,19 +133,30 @@ namespace BackEnd
 
         #region Methods
 
+        // Very inefficient code (traverses the tree every loop iteration => very slow on runtime)
+        
         /// <summary>
         /// Decodes the stream.
         /// </summary>
         /// <exception cref="InvalidOperationException">Errors in the encoded file occured.</exception>
         public void Decode()
         {
+            var total = BytesCount;
             var currentNode = Tree.Root;
             var bitReader = new BitReader(InputStream);
+            int percentage = 0;
             while (BytesCount > 0)
             {
+                var currentByte = OutputStream.Length;
                 if (currentNode is Leaf leaf)
                 {
                     OutputStream.WriteByte((byte) leaf.ByteValue);
+                    int newPercentage = (int)(((currentByte * 1.0) / total) * 100);
+                    if (newPercentage > percentage)
+                    {
+                        percentage = newPercentage;
+                        OnByteProgress(percentage);
+                    }
                     currentNode = Tree.Root;
                     BytesCount--;
                 }
@@ -156,7 +179,52 @@ namespace BackEnd
 
             }
         }
+        
 
+        ///// <summary>
+        ///// Decodes the stream.
+        ///// </summary>
+        ///// <exception cref="InvalidOperationException">Errors in the encoded file occured.</exception>
+        //public void Decode()
+        //{
+        //    int percentage = 0;
+        //    OnByteProgress(percentage);
+        //    var total = BytesCount;
+        //    var bitReader = new BitReader(InputStream);
+        //    var decodingTable = new DecodingTable(Tree);
+        //    List<int> code = new List<int>();
+        //    int bit = bitReader.Read();
+        //    while (BytesCount > 0)
+        //    {
+        //        if (bit != -1)
+        //        {
+        //            code.Add(bit);
+        //        }
+        //        var byteValue = decodingTable[code];
+        //        if (byteValue > 0)
+        //        {
+        //            OutputStream.WriteByte((byte) byteValue);
+        //            /* update current percentage */
+        //            var currentByte = OutputStream.Length;
+        //            int newPercentage = (int)(((currentByte * 1.0) / total) * 100);
+        //            if (newPercentage > percentage)
+        //            {
+        //                percentage = newPercentage;
+        //                OnByteProgress(percentage);
+        //            }
+        //            /* update bytes counter */
+        //            BytesCount--;
+        //            /* reset code */
+        //            code.RemoveAll(b => true);
+        //        }
+        //        if (bit == -1 && BytesCount > 0)
+        //        {
+        //            throw new InvalidOperationException("The decoding has failed due to errors in the encoded file.");
+        //        }
+        //        bit = bitReader.Read();
+
+        //    }
+        //}
         #endregion
     }
 }
