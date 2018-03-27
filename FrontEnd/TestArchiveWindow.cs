@@ -19,7 +19,6 @@ namespace FrontEnd
         public TestArchiveWindow()
         {
             InitializeComponent();
-            backgroundTester.RunWorkerAsync();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -63,13 +62,13 @@ namespace FrontEnd
 
         private void backgroundTester_DoWork(object sender, DoWorkEventArgs e)
         {
-            Controller.controller.SubscribeToStateUpdates(UpdateProgress);
+            Controller.controller.SubscribeToFileUpdates(UpdateProgress);
             result = Controller.controller.TestFilesInArchive();
         }
 
         private void backgroundTester_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Controller.controller.UnsubscribeFromStateUpdates(UpdateProgress);
+            Controller.controller.UnsubscribeFromFileUpdates(UpdateProgress);
             testCompleted = true;
             if (e.Error == null)
             {
@@ -96,6 +95,11 @@ namespace FrontEnd
         private void okErrorButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void TestArchiveWindow_Load(object sender, EventArgs e)
+        {
+            backgroundTester.RunWorkerAsync();
         }
     }
     }

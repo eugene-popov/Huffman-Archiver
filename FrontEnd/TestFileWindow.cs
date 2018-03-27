@@ -20,7 +20,6 @@ namespace FrontEnd
         public TestFileWindow()
         {
             InitializeComponent();
-            backgroundTester.RunWorkerAsync();
         }
 
         private void okErrorButton_Click(object sender, EventArgs e)
@@ -95,6 +94,11 @@ namespace FrontEnd
         private void okError_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void TestFileWindow_Load(object sender, EventArgs e)
+        {
+            backgroundTester.RunWorkerAsync();
         }
     }
 }

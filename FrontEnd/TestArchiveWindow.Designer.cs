@@ -56,16 +56,16 @@
             this.progressPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.progressPanel.Location = new System.Drawing.Point(0, 0);
             this.progressPanel.Name = "progressPanel";
-            this.progressPanel.Size = new System.Drawing.Size(440, 131);
+            this.progressPanel.Size = new System.Drawing.Size(451, 131);
             this.progressPanel.TabIndex = 0;
             // 
             // currentFileNumber
             // 
             this.currentFileNumber.Font = new System.Drawing.Font("Tahoma", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.currentFileNumber.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.currentFileNumber.Location = new System.Drawing.Point(280, 92);
+            this.currentFileNumber.Location = new System.Drawing.Point(246, 92);
             this.currentFileNumber.Name = "currentFileNumber";
-            this.currentFileNumber.Size = new System.Drawing.Size(158, 35);
+            this.currentFileNumber.Size = new System.Drawing.Size(201, 35);
             this.currentFileNumber.TabIndex = 16;
             this.currentFileNumber.Text = "file 1 of 10";
             this.currentFileNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -113,7 +113,7 @@
             this.resultPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.resultPanel.Location = new System.Drawing.Point(0, 0);
             this.resultPanel.Name = "resultPanel";
-            this.resultPanel.Size = new System.Drawing.Size(440, 131);
+            this.resultPanel.Size = new System.Drawing.Size(451, 131);
             this.resultPanel.TabIndex = 17;
             this.resultPanel.Visible = false;
             // 
@@ -122,7 +122,7 @@
             this.resultMessage.AutoSize = true;
             this.resultMessage.Font = new System.Drawing.Font("Tahoma", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.resultMessage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.resultMessage.Location = new System.Drawing.Point(12, 55);
+            this.resultMessage.Location = new System.Drawing.Point(3, 50);
             this.resultMessage.Name = "resultMessage";
             this.resultMessage.Size = new System.Drawing.Size(208, 35);
             this.resultMessage.TabIndex = 14;
@@ -160,7 +160,7 @@
             this.errorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.errorPanel.Location = new System.Drawing.Point(0, 0);
             this.errorPanel.Name = "errorPanel";
-            this.errorPanel.Size = new System.Drawing.Size(440, 131);
+            this.errorPanel.Size = new System.Drawing.Size(451, 131);
             this.errorPanel.TabIndex = 15;
             this.errorPanel.Visible = false;
             // 
@@ -204,17 +204,18 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(440, 131);
+            this.ClientSize = new System.Drawing.Size(451, 131);
             this.ControlBox = false;
             this.Controls.Add(this.timerText);
-            this.Controls.Add(this.resultPanel);
             this.Controls.Add(this.progressPanel);
+            this.Controls.Add(this.resultPanel);
             this.Controls.Add(this.errorPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TestArchiveWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Test the archive";
+            this.Load += new System.EventHandler(this.TestArchiveWindow_Load);
             this.progressPanel.ResumeLayout(false);
             this.progressPanel.PerformLayout();
             this.resultPanel.ResumeLayout(false);

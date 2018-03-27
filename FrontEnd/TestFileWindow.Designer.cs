@@ -84,7 +84,7 @@
             this.resultPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.resultPanel.Location = new System.Drawing.Point(0, 0);
             this.resultPanel.Name = "resultPanel";
-            this.resultPanel.Size = new System.Drawing.Size(416, 139);
+            this.resultPanel.Size = new System.Drawing.Size(424, 139);
             this.resultPanel.TabIndex = 14;
             this.resultPanel.Visible = false;
             // 
@@ -92,9 +92,9 @@
             // 
             this.resultMessage.Font = new System.Drawing.Font("Tahoma", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.resultMessage.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.resultMessage.Location = new System.Drawing.Point(12, 55);
+            this.resultMessage.Location = new System.Drawing.Point(3, 55);
             this.resultMessage.Name = "resultMessage";
-            this.resultMessage.Size = new System.Drawing.Size(398, 35);
+            this.resultMessage.Size = new System.Drawing.Size(418, 35);
             this.resultMessage.TabIndex = 14;
             this.resultMessage.Text = "test result here";
             // 
@@ -104,7 +104,7 @@
             this.progressPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.progressPanel.Location = new System.Drawing.Point(0, 0);
             this.progressPanel.Name = "progressPanel";
-            this.progressPanel.Size = new System.Drawing.Size(416, 139);
+            this.progressPanel.Size = new System.Drawing.Size(424, 139);
             this.progressPanel.TabIndex = 14;
             // 
             // progressMessage
@@ -145,7 +145,7 @@
             this.errorPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.errorPanel.Location = new System.Drawing.Point(0, 0);
             this.errorPanel.Name = "errorPanel";
-            this.errorPanel.Size = new System.Drawing.Size(416, 139);
+            this.errorPanel.Size = new System.Drawing.Size(424, 139);
             this.errorPanel.TabIndex = 14;
             this.errorPanel.Visible = false;
             // 
@@ -178,7 +178,7 @@
             this.okError.AutoSize = true;
             this.okError.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.okError.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.okError.Location = new System.Drawing.Point(365, 103);
+            this.okError.Location = new System.Drawing.Point(367, 105);
             this.okError.Name = "okError";
             this.okError.Size = new System.Drawing.Size(45, 29);
             this.okError.TabIndex = 14;
@@ -189,11 +189,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(416, 139);
+            this.ClientSize = new System.Drawing.Size(424, 139);
             this.ControlBox = false;
             this.Controls.Add(this.timerText);
-            this.Controls.Add(this.errorPanel);
             this.Controls.Add(this.resultPanel);
+            this.Controls.Add(this.errorPanel);
             this.Controls.Add(this.progressPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -201,6 +201,7 @@
             this.Name = "TestFileWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Test the file";
+            this.Load += new System.EventHandler(this.TestFileWindow_Load);
             this.resultPanel.ResumeLayout(false);
             this.resultPanel.PerformLayout();
             this.progressPanel.ResumeLayout(false);
