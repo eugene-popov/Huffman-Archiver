@@ -215,6 +215,8 @@
             this.Name = "TestArchiveWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Test the archive";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TestArchiveWindow_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TestArchiveWindow_FormClosed);
             this.Load += new System.EventHandler(this.TestArchiveWindow_Load);
             this.progressPanel.ResumeLayout(false);
             this.progressPanel.PerformLayout();

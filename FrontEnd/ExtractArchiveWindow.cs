@@ -1,24 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FrontEnd
 {
     public partial class ExtractArchiveWindow : Form
     {
-        string path;
+        private readonly Time time = new Time();
+        private bool extractionCompleted;
+        private bool extractionStarted;
+        private string path;
+        private bool selected;
 
-
-        private Time time = new Time();
-        private bool extractionCompleted = false;
-        bool selected = false;
         public ExtractArchiveWindow()
         {
             InitializeComponent();
@@ -35,10 +30,7 @@ namespace FrontEnd
             {
                 path = ChoosePathDialog.SelectedPath;
                 var shortPath = Path.GetFileName(path);
-                if (shortPath.Length > 20)
-                {
-                    shortPath = shortPath.Substring(0, 20) + "...";
-                }
+                if (shortPath.Length > 20) shortPath = shortPath.Substring(0, 20) + "...";
 
 
                 file.Text = shortPath;
@@ -46,13 +38,11 @@ namespace FrontEnd
                 toolTip1.SetToolTip(extract, "");
                 toolTip1.SetToolTip(file, path);
                 selected = true;
-
             }
         }
 
         private void taskFour_Click(object sender, EventArgs e)
         {
-
         }
 
         private void extract_Click(object sender, EventArgs e)
@@ -67,38 +57,32 @@ namespace FrontEnd
                 backgroundExtractor.RunWorkerAsync();
             }
         }
+
         private void UpdateState(string next)
         {
-            this.BeginInvoke((Action)delegate
+            BeginInvoke((Action) delegate
             {
                 var shortName = next;
-                if (shortName.Length > 25)
-                {
-                    shortName = shortName.Substring(0, 25) + "...";
-                }
+                if (shortName.Length > 25) shortName = shortName.Substring(0, 25) + "...";
+
                 currentFileName.Text = shortName;
                 toolTip1.SetToolTip(currentFileName, next);
             });
-
         }
 
         private void UpdateFile(string next)
         {
-            this.BeginInvoke((Action)delegate
-            {
-                
-                currentFileIndex.Text = next;
-            });
-
+            BeginInvoke((Action) delegate { currentFileIndex.Text = next; });
         }
+
         private void backgroundExtractor_DoWork(object sender, DoWorkEventArgs e)
         {
+            extractionStarted = true;
             Controller.controller.SubscribeToStateUpdates(UpdateState);
             Controller.controller.SubscribeToFileUpdates(UpdateFile);
             Controller.controller.SubscribeToPercentageUpdates(backgroundExtractor.ReportProgress);
 
             Controller.controller.ExtractArchiveTo(path);
-
         }
 
         private void backgroundExtractor_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -129,32 +113,26 @@ namespace FrontEnd
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (extractionCompleted)
-            {
-                /* if all the messages have been printed and no more messages will appear, end timer and change screen */
-                timer1.Enabled = false;
-            }
+            if (extractionCompleted) timer1.Enabled = false;
+
             if (timer1.Enabled)
             {
                 /* update timer in the corner */
-                string res = "";
-                if (time.min > 0)
-                {
-                    res += time.min + "m ";
-                }
+                var res = "";
+                if (time.min > 0) res += time.min + "m ";
+
                 res += time.sec + "s";
                 timerText.Text = res;
                 /* update progress message */
                 var reminder = time.sec % 3;
                 progressMessage.Text = "The archive is being extracted";
-                for (int i = 0; i <= reminder; i++)
-                {
-                    progressMessage.Text += ".";
-                }
-               /* update time */
+                for (var i = 0; i <= reminder; i++) progressMessage.Text += ".";
+
+                /* update time */
                 time.Inc();
             }
         }
+
         private void ShowResultPanel()
         {
             totalTime.Text = "in ";
@@ -162,34 +140,25 @@ namespace FrontEnd
             {
                 totalTime.Text += time.min + " ";
                 if (time.min == 1)
-                {
                     totalTime.Text += "minute ";
-                }
                 else
-                {
                     totalTime.Text += "minutes ";
-                }
             }
+
             if (time.sec > 0)
             {
                 totalTime.Text += time.sec + " ";
                 if (time.sec == 1)
-                {
                     totalTime.Text += "second ";
-                }
                 else
-                {
                     totalTime.Text += "seconds ";
-                }
             }
 
-            if (time.min == 0 && time.sec == 0)
-            {
-                totalTime.Text += "less than a second";
-            }
+            if (time.min == 0 && time.sec == 0) totalTime.Text += "less than a second";
 
             resultPanel.Visible = true;
         }
+
         private void okErrorButton_Click(object sender, EventArgs e)
         {
             Close();
@@ -197,7 +166,6 @@ namespace FrontEnd
 
         private void ExtractArchiveWindow_Load(object sender, EventArgs e)
         {
-
         }
 
         private void okResultButton_Click(object sender, EventArgs e)
@@ -207,7 +175,11 @@ namespace FrontEnd
 
         private void progressPanel_Paint(object sender, PaintEventArgs e)
         {
+        }
 
+        private void ExtractArchiveWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!extractionCompleted && extractionStarted) e.Cancel = true;
         }
     }
 }

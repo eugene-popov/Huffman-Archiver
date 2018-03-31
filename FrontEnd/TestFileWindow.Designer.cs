@@ -201,6 +201,7 @@
             this.Name = "TestFileWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Test the file";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TestFileWindow_FormClosing);
             this.Load += new System.EventHandler(this.TestFileWindow_Load);
             this.resultPanel.ResumeLayout(false);
             this.resultPanel.PerformLayout();

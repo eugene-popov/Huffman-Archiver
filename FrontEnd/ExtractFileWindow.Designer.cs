@@ -351,6 +351,7 @@
             this.Name = "ExtractFileWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Extract the file";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExtractFileWindow_FormClosing);
             this.selectionPanel.ResumeLayout(false);
             this.selectionPanel.PerformLayout();
             this.progressPanel.ResumeLayout(false);

@@ -4,48 +4,27 @@ using System.IO;
 namespace BackEnd
 {
     /// <summary>
-    /// Utility class that purpose is to read binary data from a stream.
+    ///     Utility class that purpose is to read binary data from a stream.
     /// </summary>
     public class BitReader : IDisposable
     {
-        #region Fields
-
-        /// <summary>
-        /// The stream to read bits from (not null).
-        /// </summary>
-        private Stream _inputStream;
-
-        /// <summary>
-        /// The value of the current byte in the stream. Equals to -1 if the end of the stream is reached.
-        /// </summary>
-        private int _currentByte;
-
-        /// <summary>
-        /// Number of remaining bits in the current byte to be read. 
-        /// </summary>
-        private int _numBitsRemaining;
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the BitReader class for the specified stream.
+        ///     Initializes a new instance of the BitReader class for the specified stream.
         /// </summary>
         /// <param name="inputStream">The stream to be read.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="inputStream"/> is <value>null</value>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="inputStream"/> does not support reading.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="inputStream" /> is
+        ///     <value>null</value>
+        ///     .
+        /// </exception>
+        /// <exception cref="ArgumentException"><paramref name="inputStream" /> does not support reading.</exception>
         public BitReader(Stream inputStream)
         {
-            if (inputStream == null)
-            {
-                throw new ArgumentNullException();
-            }
+            if (inputStream == null) throw new ArgumentNullException();
 
-            if (inputStream.CanRead == false)
-            {
-                throw new ArgumentException();
-            }
+            if (inputStream.CanRead == false) throw new ArgumentException();
 
             _inputStream = inputStream;
             _numBitsRemaining = 0;
@@ -57,17 +36,14 @@ namespace BackEnd
         #region Methods
 
         /// <summary>
-        /// Reads the next bit in the provided stream.  
+        ///     Reads the next bit in the provided stream.
         /// </summary>
         /// <returns>The next bit in the stream (0 or 1) or -1 if the end of the stream is reached.</returns>
         public int Read()
         {
             if (_currentByte == -1)
                 /* if the end of the stream is reached and the next bit is being asked */
-            {
-                /* indicate that the end of the stream is reached */
                 return -1;
-            }
 
             if (_numBitsRemaining == 0)
                 /* if the current byte has been completely read or the first byte is about to be read from the input stream */
@@ -75,10 +51,7 @@ namespace BackEnd
                 _currentByte = _inputStream.ReadByte();
                 if (_currentByte == -1)
                     /* if the end of the stream reached */
-                {
-                    /* indicate that the end of the stream is reached */
                     return -1;
-                }
 
                 _numBitsRemaining = 8;
             }
@@ -92,9 +65,28 @@ namespace BackEnd
 
         #endregion
 
+        #region Fields
+
+        /// <summary>
+        ///     The stream to read bits from (not null).
+        /// </summary>
+        private readonly Stream _inputStream;
+
+        /// <summary>
+        ///     The value of the current byte in the stream. Equals to -1 if the end of the stream is reached.
+        /// </summary>
+        private int _currentByte;
+
+        /// <summary>
+        ///     Number of remaining bits in the current byte to be read.
+        /// </summary>
+        private int _numBitsRemaining;
+
+        #endregion
+
         #region IDisposableImplementation
 
-        private bool disposed = false;
+        private bool disposed;
 
         ~BitReader()
         {
@@ -109,13 +101,10 @@ namespace BackEnd
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
                 /* if Dispose() hasn't been called yet */
             {
-                if (disposing)
-                {
-                    _inputStream.Dispose();
-                }
+                if (disposing) _inputStream.Dispose();
 
                 disposed = true;
             }

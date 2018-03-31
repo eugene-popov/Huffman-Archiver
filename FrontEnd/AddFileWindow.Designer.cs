@@ -345,8 +345,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(590, 196);
             this.ControlBox = false;
-            this.Controls.Add(this.compressionPanel);
             this.Controls.Add(this.selectionPanel);
+            this.Controls.Add(this.compressionPanel);
             this.Controls.Add(this.resultPanel);
             this.Controls.Add(this.errorPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -355,6 +355,7 @@
             this.Name = "AddFileWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Add a file";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddFileWindow_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AddFileWindow_FormClosed);
             this.selectionPanel.ResumeLayout(false);
             this.selectionPanel.PerformLayout();

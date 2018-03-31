@@ -1,29 +1,21 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using BackEnd;
 
 namespace FrontEnd
 {
     public partial class AddFileWindow : Form
     {
-        
-        private bool selected = false;
-        private string path;
-        private string shortname;
+        private bool compressionCompleted;
+        private bool compressionStarted;
         private string filename;
+        private int filledTaskLabels;
+        private string path;
+        private bool selected;
+        private string shortname;
         private Time time;
-        private int filledTaskLabels = 0;
-        private bool compressionCompleted = false;
 
         public AddFileWindow()
         {
@@ -42,20 +34,15 @@ namespace FrontEnd
                 path = addFileDialog.FileName;
                 filename = Path.GetFileName(path);
                 if (filename.Length > 15)
-                {
                     shortname = filename.Substring(0, 15) + "...";
-                }
                 else
-                {
                     shortname = filename;
-                }
 
                 file.Text = shortname;
                 compress.ForeColor = Color.FromArgb(64, 64, 64);
                 toolTip1.SetToolTip(compress, "");
                 toolTip1.SetToolTip(file, filename);
                 selected = true;
-
             }
         }
 
@@ -72,9 +59,6 @@ namespace FrontEnd
 
                 backgroundCompressor1.RunWorkerAsync(path);
             }
-
-
-
         }
 
         private void addTask(string state)
@@ -108,23 +92,18 @@ namespace FrontEnd
 
         private void updateColors()
         {
-
         }
+
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (compressionCompleted)
-            {
-                /* if all the messages have been printed and no more messages will appear, end timer and change screen */
-                timer1.Enabled = false;
-            }
+            if (compressionCompleted) timer1.Enabled = false;
+
             if (timer1.Enabled)
             {
                 /* update timer in the corner */
-                string res = "";
-                if (time.min > 0)
-                {
-                    res += time.min + "m ";
-                }
+                var res = "";
+                if (time.min > 0) res += time.min + "m ";
+
                 res += time.sec + "s";
                 timerText.Text = res;
                 /* update time */
@@ -139,33 +118,23 @@ namespace FrontEnd
             {
                 totalTime.Text += time.min + " ";
                 if (time.min == 1)
-                {
                     totalTime.Text += "minute ";
-                }
                 else
-                {
                     totalTime.Text += "minutes ";
-                }
             }
+
             if (time.sec > 0)
             {
                 totalTime.Text += time.sec + " ";
                 if (time.sec == 1)
-                {
                     totalTime.Text += "second ";
-                }
                 else
-                {
                     totalTime.Text += "seconds ";
-                }
             }
 
-            if (time.min == 0 && time.sec == 0)
-            {
-                totalTime.Text += "less than a second";
-            }
+            if (time.min == 0 && time.sec == 0) totalTime.Text += "less than a second";
 
-                resultPanel.Visible = true;
+            resultPanel.Visible = true;
         }
 
         private void ShowErrorPanel(string message)
@@ -176,6 +145,7 @@ namespace FrontEnd
 
         private void backgroundCompressor1_DoWork(object sender, DoWorkEventArgs e)
         {
+            compressionStarted = true;
             Controller.controller.SubscribeToStateUpdates(UpdateState);
             Controller.controller.SubscribeToPercentageUpdates(backgroundCompressor1.ReportProgress);
             Controller.controller.CompressFile(path);
@@ -183,12 +153,9 @@ namespace FrontEnd
 
         private void UpdateState(string next)
         {
-            this.BeginInvoke((Action) delegate
-            {
-                addTask(next);
-            });
-            
+            BeginInvoke((Action) delegate { addTask(next); });
         }
+
         private void backgroundCompressor1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             compressionCompleted = true;
@@ -206,7 +173,7 @@ namespace FrontEnd
                 ShowErrorPanel(e.Error.Message);
                 compressionPanel.Visible = false;
                 compressionPanel.Enabled = false;
-            }        
+            }
         }
 
         private void backgroundCompressor1_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -216,7 +183,6 @@ namespace FrontEnd
 
         private void label3_Click(object sender, EventArgs e)
         {
-
         }
 
         private void AddFileWindow_FormClosed(object sender, FormClosedEventArgs e)
@@ -232,6 +198,11 @@ namespace FrontEnd
         private void okErrorButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void AddFileWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!compressionCompleted && compressionStarted) e.Cancel = true;
         }
     }
 }

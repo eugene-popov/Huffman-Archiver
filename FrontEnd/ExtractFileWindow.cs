@@ -1,27 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FrontEnd
 {
     public partial class ExtractFileWindow : Form
     {
-        string path;
-        string filename;
-        string shortname;
+        private readonly string extractedFileName;
 
-        private Time time = new Time();
-        private int filledTaskLabels = 0;
-        private bool extractionCompleted = false;
-        string extractedFileName;
-        bool selected = false;
+        private readonly Time time = new Time();
+        private bool extractionCompleted;
+
+        private bool extractionStarted;
+        private string filename;
+        private int filledTaskLabels;
+        private string path;
+        private bool selected;
+        private string shortname;
 
         public ExtractFileWindow(string filename)
         {
@@ -36,18 +33,14 @@ namespace FrontEnd
             {
                 path = ChoosePathDialog.FileName;
                 var shortPath = Path.GetFileName(Path.GetDirectoryName(path)) + "\\" + Path.GetFileName(path);
-                if (shortPath.Length > 23)
-                {
-                    shortPath = shortPath.Substring(0, 23) + "...";
-                }
-                
+                if (shortPath.Length > 23) shortPath = shortPath.Substring(0, 23) + "...";
+
 
                 file.Text = shortPath;
                 extract.ForeColor = Color.FromArgb(64, 64, 64);
                 toolTip1.SetToolTip(extract, "");
                 toolTip1.SetToolTip(file, path);
                 selected = true;
-
             }
         }
 
@@ -58,6 +51,7 @@ namespace FrontEnd
 
         private void backgroundExtractor_DoWork(object sender, DoWorkEventArgs e)
         {
+            extractionStarted = true;
             Controller.controller.SubscribeToStateUpdates(UpdateState);
             Controller.controller.SubscribeToPercentageUpdates(backgroundExtractor.ReportProgress);
             Controller.controller.ExtractSelectedFile(path);
@@ -65,12 +59,9 @@ namespace FrontEnd
 
         private void UpdateState(string next)
         {
-            this.BeginInvoke((Action)delegate
-            {
-                addTask(next);
-            });
-
+            BeginInvoke((Action) delegate { addTask(next); });
         }
+
         private void addTask(string state)
         {
             switch (filledTaskLabels)
@@ -99,20 +90,17 @@ namespace FrontEnd
                     break;
             }
         }
+
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (extractionCompleted)
-            {
-                timer1.Enabled = false;
-            }
+            if (extractionCompleted) timer1.Enabled = false;
+
             if (timer1.Enabled)
             {
                 /* update timer in the corner */
-                string res = "";
-                if (time.min > 0)
-                {
-                    res += time.min + "m ";
-                }
+                var res = "";
+                if (time.min > 0) res += time.min + "m ";
+
                 res += time.sec + "s";
                 timerText.Text = res;
                 /* update time */
@@ -128,34 +116,25 @@ namespace FrontEnd
             {
                 totalTime.Text += time.min + " ";
                 if (time.min == 1)
-                {
                     totalTime.Text += "minute ";
-                }
                 else
-                {
                     totalTime.Text += "minutes ";
-                }
             }
+
             if (time.sec > 0)
             {
                 totalTime.Text += time.sec + " ";
                 if (time.sec == 1)
-                {
                     totalTime.Text += "second ";
-                }
                 else
-                {
                     totalTime.Text += "seconds ";
-                }
             }
 
-            if (time.min == 0 && time.sec == 0)
-            {
-                totalTime.Text += "less than a second";
-            }
+            if (time.min == 0 && time.sec == 0) totalTime.Text += "less than a second";
 
             resultPanel.Visible = true;
         }
+
         private void backgroundExtractor_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             extractionCompleted = true;
@@ -201,6 +180,11 @@ namespace FrontEnd
         private void okResultButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void ExtractFileWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!extractionStarted && extractionStarted) e.Cancel = true;
         }
     }
 }

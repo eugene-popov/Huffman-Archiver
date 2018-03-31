@@ -83,6 +83,16 @@ namespace FrontEnd.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap AddFileSmall {
+            get {
+                object obj = ResourceManager.GetObject("AddFileSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CloseArchive {
             get {
                 object obj = ResourceManager.GetObject("CloseArchive", resourceCulture);
@@ -106,6 +116,16 @@ namespace FrontEnd.Properties {
         internal static System.Drawing.Bitmap CreateArchive {
             get {
                 object obj = ResourceManager.GetObject("CreateArchive", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap EmptyArchive {
+            get {
+                object obj = ResourceManager.GetObject("EmptyArchive", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

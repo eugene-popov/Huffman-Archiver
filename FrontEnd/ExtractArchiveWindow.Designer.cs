@@ -339,6 +339,7 @@
             this.Name = "ExtractArchiveWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Extract the archive";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExtractArchiveWindow_FormClosing);
             this.Load += new System.EventHandler(this.ExtractArchiveWindow_Load);
             this.selectionPanel.ResumeLayout(false);
             this.selectionPanel.PerformLayout();

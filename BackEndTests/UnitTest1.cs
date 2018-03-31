@@ -12,46 +12,31 @@ namespace BackEndTests
         [TestMethod]
         public void TestMethod1()
         {
-            FileStream freqTableStream = new FileStream("FrequencyTableTest.in", FileMode.Open, FileAccess.Read);
-            byte[] bytes = new byte[freqTableStream.Length];
-            freqTableStream.Read(bytes, 0, (int)freqTableStream.Length);
-            FrequencyTable frequencyTable = new FrequencyTable(bytes);
+            var freqTableStream = new FileStream("FrequencyTableTest.in", FileMode.Open, FileAccess.Read);
+            var bytes = new byte[freqTableStream.Length];
+            freqTableStream.Read(bytes, 0, (int) freqTableStream.Length);
+            var frequencyTable = new FrequencyTable(bytes);
 
-            FileStream fileStream = new FileStream("serializedFrequencyTable.out", FileMode.Create, FileAccess.Write);
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
+            var fileStream = new FileStream("serializedFrequencyTable.out", FileMode.Create, FileAccess.Write);
+            var binaryFormatter = new BinaryFormatter();
             binaryFormatter.Serialize(fileStream, frequencyTable);
-
         }
 
         [TestMethod]
         public void ArchiveTest1()
         {
-            Archive archive = new Archive("archive");
+            var archive = new Archive("archive");
             archive.AddFile("123.doc");
             archive.AddFile("123.txt");
             archive.Close();
-        }
-        
-        [TestMethod]
-        public void ArchiveTest2()
-        {
-            Archive archive = new Archive("archive");
-            archive.ExtractFile("123.doc");
         }
 
         [TestMethod]
         public void FileEndTest()
         {
-            FileStream fileStream = File.OpenRead("123.doc");
-            
-            for (int i = 1; i <= fileStream.Length+5; i++)
-            {
-                Console.WriteLine("{0}:{1}",i,fileStream.ReadByte());
-            }
-            
+            var fileStream = File.OpenRead("123.doc");
+
+            for (var i = 1; i <= fileStream.Length + 5; i++) Console.WriteLine("{0}:{1}", i, fileStream.ReadByte());
         }
-
-
-
     }
 }
