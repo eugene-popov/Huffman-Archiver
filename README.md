@@ -1,5 +1,6 @@
 # Huffman-Archiver
 A compression tool utilizing the Huffman coding algorithm.
+[Main window](/images/mainwindow.PNG)
 ## Running
 See the releases section. 
 ## Building
